@@ -87,10 +87,13 @@ export interface HistoryEntry {
   timestamp: number;
 }
 
-/** Environment variable key-value pair */
+/** Environment variable with metadata */
 export interface EnvironmentVariable {
   key: string;
   value: string;
+  description?: string;
+  enabled: boolean;
+  isSecret: boolean;
 }
 
 /** An environment profile */
@@ -120,6 +123,47 @@ export type AppearanceMode = "system" | "light" | "dark";
 /** Interface density */
 export type DensityMode = "compact" | "comfortable" | "spacious";
 
+/** Navigation screen names */
+export type ScreenName =
+  | "home"
+  | "workspace"
+  | "collections"
+  | "history"
+  | "environments"
+  | "tests"
+  | "import"
+  | "settings";
+
+/** Navigation item definition */
+export interface NavigationItem {
+  id: ScreenName;
+  label: string;
+  icon: string;
+}
+
+/** Test case result */
+export interface TestCaseResult {
+  id: string;
+  name: string;
+  passed: boolean;
+  duration: number;
+  error?: string;
+}
+
+/** Automated test definition */
+export interface AutomatedTest {
+  id: string;
+  name: string;
+  description?: string;
+  request: RequestItem;
+  scripts?: string;
+  testCases: TestCaseResult[];
+  lastRun?: number;
+  lastResult?: "pass" | "fail" | "pending";
+  createdAt: number;
+  updatedAt: number;
+}
+
 /** App-wide settings */
 export interface AppSettings {
   // Appearance
@@ -141,4 +185,9 @@ export interface AppSettings {
   sslVerification: boolean;
   timeout: number; // seconds
   maxHistoryEntries: number;
+
+  // Workspace
+  defaultMethod: HttpMethod;
+  defaultLayout: "horizontal" | "vertical";
+  sidebarWidth: number;
 }

@@ -188,13 +188,22 @@
   width: 100%;
 }
 
+/* Method color indicators in dropdown */
+.method-dropdown-item[data-method="GET"] { color: var(--method-get); }
+.method-dropdown-item[data-method="POST"] { color: var(--method-post); }
+.method-dropdown-item[data-method="PUT"] { color: var(--method-put); }
+.method-dropdown-item[data-method="PATCH"] { color: var(--method-patch); }
+.method-dropdown-item[data-method="DELETE"] { color: var(--method-delete); }
+.method-dropdown-item[data-method="HEAD"] { color: var(--method-head); }
+.method-dropdown-item[data-method="OPTIONS"] { color: var(--method-options); }
+
 .method-dropdown-item:hover {
   background: var(--accent-subtle);
-  color: var(--text-primary);
 }
 
 .method-dropdown-item.active {
   background: var(--accent-subtle);
+  font-weight: 800;
 }
 
 /* ——— URL Input ——— */
@@ -235,6 +244,11 @@
 
 .url-input::placeholder {
   color: var(--text-tertiary);
+}
+
+/* ——— Save Button ——— */
+.save-btn-icon .saved-icon {
+  color: var(--success);
 }
 
 /* ——— Send Button ——— */
@@ -279,8 +293,16 @@
   animation: spin 0.8s linear infinite;
 }
 
-/* ——— Settings Button ——— */
-.settings-btn {
+/* ——— Header Spacer ——— */
+.header-spacer {
+  flex: 1;
+}
+
+/* ——— Header Actions ——— */
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
   flex-shrink: 0;
 }
 

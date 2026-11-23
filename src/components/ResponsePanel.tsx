@@ -1,5 +1,6 @@
 import { useAppStore } from "@/store/appStore";
 import { formatJson, formatDuration, formatBytes, getStatusCategory } from "@/utils/helpers";
+import { JsonHighlighter } from "@/components/JsonHighlighter";
 import {
   FileText,
   List,
@@ -90,7 +91,9 @@ export const ResponsePanel = () => {
         <span className={`response-status-code status-${statusCategory}`}>
           {currentResponse.status}
         </span>
-        <span className="response-status-text">{currentResponse.statusText}</span>
+        <span className={`response-status-text status-${statusCategory}`}>
+          {currentResponse.statusText}
+        </span>
         <span className="status-separator" />
         <span className="response-meta-item">
           {formatDuration(currentResponse.duration)}
@@ -141,7 +144,13 @@ export const ResponsePanel = () => {
 
       {/* Tab content */}
       <div className="response-content">
-        {responseTab === "body" && (
+        {responseTab === "body" && isJsonResponse && (
+          <JsonHighlighter
+            json={responseBody}
+            className={`response-body ${settings.wrapResponse ? "wrap" : "nowrap"}`}
+          />
+        )}
+        {responseTab === "body" && !isJsonResponse && (
           <pre
             className={`response-body ${settings.wrapResponse ? "wrap" : "nowrap"}`}
           >

@@ -1,5 +1,5 @@
 /* ============================================
-   KrestReq — Premium Design System
+   Kestreq — Premium Design System
    Centralized design tokens, themes, animations
    ============================================ */
 
@@ -138,6 +138,14 @@
   --status-4xx: #fab387;
   --status-5xx: #f38ba8;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #89b4fa;
+  --json-string: #a6e3a1;
+  --json-number: #fab387;
+  --json-boolean: #cba6f7;
+  --json-null: #f38ba8;
+  --json-bracket: #6c7086;
+
   --scrollbar-thumb: #45475a;
   --scrollbar-thumb-hover: #585b70;
 
@@ -209,6 +217,14 @@
   --status-4xx: #ea580c;
   --status-5xx: #d20f39;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #1e66f5;
+  --json-string: #2d9a3e;
+  --json-number: #ea580c;
+  --json-boolean: #7c3aed;
+  --json-null: #d20f39;
+  --json-bracket: #9a9ab0;
+
   --scrollbar-thumb: #c4c6cc;
   --scrollbar-thumb-hover: #a0a2a8;
 
@@ -277,6 +293,14 @@
   --status-3xx: #d29922;
   --status-4xx: #f0883e;
   --status-5xx: #f85149;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #58a6ff;
+  --json-string: #3fb950;
+  --json-number: #f0883e;
+  --json-boolean: #bc8cff;
+  --json-null: #f85149;
+  --json-bracket: #484f58;
 
   --scrollbar-thumb: #30363d;
   --scrollbar-thumb-hover: #484f58;
@@ -347,6 +371,14 @@
   --status-4xx: #ffb86c;
   --status-5xx: #ff5555;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #8be9fd;
+  --json-string: #50fa7b;
+  --json-number: #ffb86c;
+  --json-boolean: #bd93f9;
+  --json-null: #ff5555;
+  --json-bracket: #6272a4;
+
   --scrollbar-thumb: #44475a;
   --scrollbar-thumb-hover: #6272a4;
 
@@ -415,6 +447,14 @@
   --status-3xx: #ebcb8b;
   --status-4xx: #d08770;
   --status-5xx: #bf616a;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #88c0d0;
+  --json-string: #a3be8c;
+  --json-number: #d08770;
+  --json-boolean: #b48ead;
+  --json-null: #bf616a;
+  --json-bracket: #7b88a1;
 
   --scrollbar-thumb: #4c566a;
   --scrollbar-thumb-hover: #616e88;
@@ -485,6 +525,14 @@
   --status-4xx: #cb4b16;
   --status-5xx: #dc322f;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #268bd2;
+  --json-string: #859900;
+  --json-number: #cb4b16;
+  --json-boolean: #6c71c4;
+  --json-null: #dc322f;
+  --json-bracket: #586e75;
+
   --scrollbar-thumb: #0a4050;
   --scrollbar-thumb-hover: #2aa198;
 
@@ -553,6 +601,14 @@
   --status-3xx: #b58900;
   --status-4xx: #cb4b16;
   --status-5xx: #dc322f;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #268bd2;
+  --json-string: #859900;
+  --json-number: #cb4b16;
+  --json-boolean: #6c71c4;
+  --json-null: #dc322f;
+  --json-bracket: #93a1a1;
 
   --scrollbar-thumb: #ddd6c1;
   --scrollbar-thumb-hover: #ccc4a6;
@@ -623,6 +679,14 @@
   --status-4xx: #fd971f;
   --status-5xx: #f92672;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #66d9ef;
+  --json-string: #a6e22e;
+  --json-number: #fd971f;
+  --json-boolean: #ae81ff;
+  --json-null: #f92672;
+  --json-bracket: #75715e;
+
   --scrollbar-thumb: #3e3d32;
   --scrollbar-thumb-hover: #4e4d40;
 
@@ -691,6 +755,14 @@
   --status-3xx: #ffcc00;
   --status-4xx: #ff8800;
   --status-5xx: #ff3366;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #00d4ff;
+  --json-string: #00ff88;
+  --json-number: #ff8800;
+  --json-boolean: #cc66ff;
+  --json-null: #ff3366;
+  --json-bracket: #808080;
 
   --scrollbar-thumb: #404040;
   --scrollbar-thumb-hover: #606060;
@@ -835,6 +907,165 @@ body {
   min-height: 0;
 }
 
+/* ——— Workspace Screen ——— */
+.workspace-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ——— Main Content ——— */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ——— History Page ——— */
+.history-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.history-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-8);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.history-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.history-card:hover {
+  border-color: var(--accent-border);
+}
+
+.history-card-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.history-method-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  min-width: 44px;
+  padding: 2px var(--space-1);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* Method color indicators */
+.history-method-badge[data-method="GET"] { color: var(--method-get); }
+.history-method-badge[data-method="POST"] { color: var(--method-post); }
+.history-method-badge[data-method="PUT"] { color: var(--method-put); }
+.history-method-badge[data-method="PATCH"] { color: var(--method-patch); }
+.history-method-badge[data-method="DELETE"] { color: var(--method-delete); }
+.history-method-badge[data-method="HEAD"] { color: var(--method-head); }
+.history-method-badge[data-method="OPTIONS"] { color: var(--method-options); }
+
+.history-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.history-card-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-card-url {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-status-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  padding: 2px var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+.history-status-badge.status-success {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.history-status-badge.status-warning {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.history-status-badge.status-error {
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+.history-duration {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.history-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--border-secondary);
+}
+
+.history-timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.history-card-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* ——— Filter Label ——— */
+.filter-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* ============================================
    SELECTION & FOCUS
    ============================================ */
@@ -956,11 +1187,25 @@ body {
   padding: 0 var(--space-1);
 }
 
+/* Status bar color indicators */
+.status-bar-item.sending {
+  color: var(--warning);
+}
+
+.status-bar-item.saved {
+  color: var(--success);
+}
+
+.status-bar-item.error {
+  color: var(--error);
+}
+
 .status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--success);
+  box-shadow: 0 0 4px var(--success);
 }
 
 .status-dot.error {

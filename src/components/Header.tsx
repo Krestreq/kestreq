@@ -3,13 +3,14 @@ import { useAppStore } from "@/store/appStore";
 import { getMethodColorVar } from "@/utils/helpers";
 import type { HttpMethod } from "@/types";
 import {
-  PanelLeftClose,
-  PanelLeftOpen,
   Send,
   Loader2,
-  Settings2,
   Globe,
   ChevronDown,
+  Command,
+  Settings,
+  Save,
+  FolderPlus,
 } from "lucide-react";
 import "./Header.css";
 
@@ -21,11 +22,13 @@ export const Header = () => {
     setCurrentRequest,
     sendRequest,
     isSending,
-    toggleSidebar,
-    sidebarOpen,
-    toggleSettings,
-    settingsOpen,
+    currentScreen,
+    setCurrentScreen,
+    toggleCommandPalette,
     settings,
+    saveRequest,
+    savedCollectionId,
+    setSaveAsModalOpen,
   } = useAppStore();
 
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
@@ -49,7 +52,18 @@ export const Header = () => {
     }
   };
 
+  const handleSave = () => {
+    if (savedCollectionId) {
+      // Already saved to a collection — update in place
+      saveRequest(savedCollectionId);
+    } else {
+      // No collection selected — open Save As modal
+      setSaveAsModalOpen(true);
+    }
+  };
+
   const methodColor = getMethodColorVar(currentRequest.method);
+  const isWorkspace = currentScreen === "workspace";
 
   return (
     <header className="header">
@@ -62,99 +76,120 @@ export const Header = () => {
         </div>
       )}
 
-      {/* Sidebar toggle */}
-      <button
-        className="icon-btn sidebar-toggle"
-        onClick={toggleSidebar}
-        data-tooltip={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-        aria-label={sidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
-      >
-        {sidebarOpen ? <PanelLeftClose size={18} /> : <PanelLeftOpen size={18} />}
-      </button>
+      {isWorkspace ? (
+        <>
+          {/* Request bar for workspace */}
+          <div className="request-bar">
+            {/* Request name */}
+            <input
+              type="text"
+              className="request-name"
+              placeholder="Request name"
+              value={currentRequest.name}
+              onChange={(e) => handleNameChange(e.target.value)}
+              aria-label="Request name"
+            />
 
-      {/* Request bar */}
-      <div className="request-bar">
-        {/* Request name */}
-        <input
-          type="text"
-          className="request-name"
-          placeholder="Request name"
-          value={currentRequest.name}
-          onChange={(e) => handleNameChange(e.target.value)}
-          aria-label="Request name"
-        />
-
-        {/* Method dropdown */}
-        <div className="method-dropdown-wrapper">
-          <button
-            className="method-dropdown"
-            onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
-            style={{ color: methodColor }}
-            aria-label="HTTP method"
-            aria-expanded={methodDropdownOpen}
-          >
-            <span className="method-text">{currentRequest.method}</span>
-            <ChevronDown size={12} className="method-chevron" />
-          </button>
-          {methodDropdownOpen && (
-            <div className="method-dropdown-menu" role="listbox">
-              {METHODS.map((method) => (
-                <button
-                  key={method}
-                  className={`method-dropdown-item ${currentRequest.method === method ? "active" : ""}`}
-                  style={currentRequest.method === method ? { color: methodColor } : {}}
-                  onClick={() => handleMethodChange(method)}
-                  role="option"
-                  aria-selected={currentRequest.method === method}
-                >
-                  {method}
-                </button>
-              ))}
+            {/* Method dropdown */}
+            <div className="method-dropdown-wrapper">
+              <button
+                className="method-dropdown"
+                onClick={() => setMethodDropdownOpen(!methodDropdownOpen)}
+                style={{ color: methodColor }}
+                aria-label="HTTP method"
+                aria-expanded={methodDropdownOpen}
+              >
+                <span className="method-text">{currentRequest.method}</span>
+                <ChevronDown size={12} className="method-chevron" />
+              </button>
+              {methodDropdownOpen && (
+                <div className="method-dropdown-menu" role="listbox">
+                  {METHODS.map((method) => (
+                    <button
+                      key={method}
+                      className={`method-dropdown-item ${currentRequest.method === method ? "active" : ""}`}
+                      data-method={method}
+                      onClick={() => handleMethodChange(method)}
+                      role="option"
+                      aria-selected={currentRequest.method === method}
+                    >
+                      {method}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-          )}
-        </div>
 
-        {/* URL input */}
-        <div className="url-input-wrapper">
-          <Globe size={14} className="url-icon" />
-          <input
-            type="text"
-            className="url-input"
-            placeholder="Enter request URL"
-            value={currentRequest.url}
-            onChange={(e) => handleUrlChange(e.target.value)}
-            onKeyDown={(e) => {
-              if (e.key === "Enter") handleSend();
-            }}
-            aria-label="Request URL"
-          />
-        </div>
+            {/* URL input */}
+            <div className="url-input-wrapper">
+              <Globe size={14} className="url-icon" />
+              <input
+                type="text"
+                className="url-input"
+                placeholder="Enter request URL"
+                value={currentRequest.url}
+                onChange={(e) => handleUrlChange(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") handleSend();
+                }}
+                aria-label="Request URL"
+              />
+            </div>
 
-        {/* Send button */}
+            {/* Send button */}
+            <button
+              className="send-btn"
+              onClick={handleSend}
+              disabled={isSending || !currentRequest.url.trim()}
+              aria-label={isSending ? "Sending request" : "Send request"}
+            >
+              {isSending ? (
+                <Loader2 size={16} className="send-icon spin" />
+              ) : (
+                <Send size={16} className="send-icon" />
+              )}
+              <span className="send-text">{isSending ? "Sending" : "Send"}</span>
+            </button>
+
+            {/* Save button */}
+            <button
+              className="icon-btn save-btn-icon"
+              onClick={handleSave}
+              data-tooltip={savedCollectionId ? "Saved" : "Save to collection"}
+              aria-label={savedCollectionId ? "Saved to collection" : "Save to collection"}
+            >
+              {savedCollectionId ? (
+                <Save size={16} className="saved-icon" />
+              ) : (
+                <FolderPlus size={16} />
+              )}
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="header-spacer" />
+      )}
+
+      {/* Right side actions */}
+      <div className="header-actions">
         <button
-          className="send-btn"
-          onClick={handleSend}
-          disabled={isSending || !currentRequest.url.trim()}
-          aria-label={isSending ? "Sending request" : "Send request"}
+          className="icon-btn"
+          onClick={toggleCommandPalette}
+          data-tooltip="Command Palette"
+          aria-label="Command Palette"
         >
-          {isSending ? (
-            <Loader2 size={16} className="send-icon spin" />
-          ) : (
-            <Send size={16} className="send-icon" />
-          )}
-          <span className="send-text">{isSending ? "Sending" : "Send"}</span>
+          <Command size={16} />
+        </button>
+        <button
+          className="icon-btn"
+          onClick={() => setCurrentScreen("settings")}
+          data-tooltip="Settings"
+          aria-label="Settings"
+        >
+          <Settings size={16} />
         </button>
       </div>
 
-      {/* Settings button */}
-      <button
-        className={`icon-btn settings-btn ${settingsOpen ? "active" : ""}`}
-        onClick={toggleSettings}
-        data-tooltip="Settings"
-        aria-label="Toggle settings"
-      >
-        <Settings2 size={18} />
-      </button>
     </header>
   );
 };

@@ -7,6 +7,8 @@ import type {
   Environment,
   AppSettings,
   ThemeName,
+  ScreenName,
+  AutomatedTest,
 } from "@/types";
 import { DEFAULT_SETTINGS, createBlankRequest } from "@/utils/constants";
 import {
@@ -14,6 +16,8 @@ import {
   addCollection as persistCollection,
   updateCollection as persistCollectionUpdate,
   deleteCollection as persistCollectionDelete,
+  addRequestToCollection as persistAddRequest,
+  updateRequestInCollection as persistUpdateRequest,
   getHistory,
   addToHistory as persistHistory,
   clearHistory as persistClearHistory,
@@ -26,6 +30,10 @@ import {
   getActiveEnvironment,
   getSettings as loadSettings,
   saveSettings as persistSettings,
+  getAutomatedTests,
+  addAutomatedTest as persistAutomatedTest,
+  updateAutomatedTest as persistAutomatedTestUpdate,
+  deleteAutomatedTest as persistAutomatedTestDelete,
 } from "@/services/storage";
 import { sendRequest as apiSendRequest } from "@/services/apiClient";
 
@@ -58,10 +66,21 @@ const applyLiquidGlass = (enabled: boolean) => {
 };
 
 interface AppState {
+  // ——— Navigation ———
+  currentScreen: ScreenName;
+  setCurrentScreen: (screen: ScreenName) => void;
+  commandPaletteOpen: boolean;
+  toggleCommandPalette: () => void;
+  setCommandPaletteOpen: (open: boolean) => void;
+
   // ——— Request Editor ———
   currentRequest: RequestItem;
   setCurrentRequest: (request: RequestItem) => void;
   resetCurrentRequest: () => void;
+  savedRequestId: string | null;
+  savedCollectionId: string | null;
+  saveRequest: (collectionId?: string) => void;
+  openRequest: (request: RequestItem, collectionId: string) => void;
 
   // ——— Response ———
   currentResponse: ResponseItem | null;
@@ -91,6 +110,13 @@ interface AppState {
   deleteEnvironment: (id: string) => void;
   loadEnvironments: () => void;
 
+  // ——— Automated Tests ———
+  automatedTests: AutomatedTest[];
+  loadAutomatedTests: () => void;
+  addAutomatedTest: (test: AutomatedTest) => void;
+  updateAutomatedTest: (test: AutomatedTest) => void;
+  deleteAutomatedTest: (id: string) => void;
+
   // ——— Settings ———
   settings: AppSettings;
   updateSettings: (settings: Partial<AppSettings>) => void;
@@ -106,13 +132,62 @@ interface AppState {
   setResponseTab: (tab: "body" | "headers" | "info") => void;
   settingsOpen: boolean;
   toggleSettings: () => void;
+  saveAsModalOpen: boolean;
+  setSaveAsModalOpen: (open: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
+  // ——— Navigation ———
+  currentScreen: "home",
+  setCurrentScreen: (screen) => set({ currentScreen: screen }),
+  commandPaletteOpen: false,
+  toggleCommandPalette: () => set((s) => ({ commandPaletteOpen: !s.commandPaletteOpen })),
+  setCommandPaletteOpen: (open) => set({ commandPaletteOpen: open }),
+
   // ——— Request Editor ———
   currentRequest: createBlankRequest(),
   setCurrentRequest: (request) => set({ currentRequest: request }),
   resetCurrentRequest: () => set({ currentRequest: createBlankRequest() }),
+  savedRequestId: null,
+  savedCollectionId: null,
+  saveRequest: (collectionId) => {
+    const { currentRequest, savedRequestId, savedCollectionId } = get();
+    
+    // Determine target collection
+    const targetCollectionId = collectionId || savedCollectionId;
+    
+    if (!targetCollectionId) {
+      // No collection selected — the UI should show a "Save As" dialog
+      // This is handled by the component calling this function with a collectionId
+      console.warn("No collection selected. Please create a collection first or use Save As.");
+      return;
+    }
+
+    // Update the request in storage
+    if (savedRequestId && savedCollectionId) {
+      // Update existing saved request
+      persistUpdateRequest(savedCollectionId, currentRequest);
+    } else {
+      // New request — add to collection
+      persistAddRequest(targetCollectionId, currentRequest);
+    }
+
+    // Reload collections and set saved state
+    set({
+      collections: getCollections(),
+      savedRequestId: currentRequest.id,
+      savedCollectionId: targetCollectionId,
+    });
+  },
+  openRequest: (request, collectionId) => {
+    set({
+      currentRequest: { ...request },
+      savedRequestId: request.id,
+      savedCollectionId: collectionId,
+      currentScreen: "workspace",
+      currentResponse: null,
+    });
+  },
 
   // ——— Response ———
   currentResponse: null,
@@ -234,6 +309,22 @@ export const useAppStore = create<AppState>((set, get) => ({
     set({ environments: envs, activeEnvironmentId: activeId });
   },
 
+  // ——— Automated Tests ———
+  automatedTests: [],
+  loadAutomatedTests: () => set({ automatedTests: getAutomatedTests() }),
+  addAutomatedTest: (test) => {
+    const updated = persistAutomatedTest(test);
+    set({ automatedTests: updated });
+  },
+  updateAutomatedTest: (test) => {
+    const updated = persistAutomatedTestUpdate(test.id, test);
+    set({ automatedTests: updated });
+  },
+  deleteAutomatedTest: (id) => {
+    const updated = persistAutomatedTestDelete(id);
+    set({ automatedTests: updated });
+  },
+
   // ——— Settings ———
   settings: DEFAULT_SETTINGS,
   updateSettings: (partial) => {
@@ -269,4 +360,6 @@ export const useAppStore = create<AppState>((set, get) => ({
   setResponseTab: (tab) => set({ responseTab: tab }),
   settingsOpen: false,
   toggleSettings: () => set((s) => ({ settingsOpen: !s.settingsOpen })),
+  saveAsModalOpen: false,
+  setSaveAsModalOpen: (open) => set({ saveAsModalOpen: open }),
 }));

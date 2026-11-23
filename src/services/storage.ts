@@ -1,8 +1,11 @@
 import type {
   Collection,
+  Folder,
   HistoryEntry,
   Environment,
   AppSettings,
+  AutomatedTest,
+  RequestItem,
 } from "@/types";
 
 /**
@@ -17,6 +20,7 @@ const STORAGE_KEYS = {
   ENVIRONMENTS: "krestreq_environments",
   ACTIVE_ENVIRONMENT: "krestreq_active_env",
   SETTINGS: "krestreq_settings",
+  AUTOMATED_TESTS: "krestreq_automated_tests",
 };
 
 /** Generic save helper */
@@ -155,3 +159,205 @@ export const getSettings = (defaults: AppSettings): AppSettings => {
 
 export const saveSettings = (settings: AppSettings): void =>
   save(STORAGE_KEYS.SETTINGS, settings);
+
+// ——— Automated Tests ———
+
+export const getAutomatedTests = (): AutomatedTest[] =>
+  load<AutomatedTest[]>(STORAGE_KEYS.AUTOMATED_TESTS, []);
+
+export const saveAutomatedTests = (tests: AutomatedTest[]): void =>
+  save(STORAGE_KEYS.AUTOMATED_TESTS, tests);
+
+export const addAutomatedTest = (test: AutomatedTest): AutomatedTest[] => {
+  const tests = getAutomatedTests();
+  tests.push(test);
+  saveAutomatedTests(tests);
+  return tests;
+};
+
+export const updateAutomatedTest = (
+  id: string,
+  test: AutomatedTest
+): AutomatedTest[] => {
+  const tests = getAutomatedTests();
+  const index = tests.findIndex((t) => t.id === id);
+  if (index !== -1) {
+    tests[index] = test;
+  }
+  saveAutomatedTests(tests);
+  return tests;
+};
+
+export const deleteAutomatedTest = (id: string): AutomatedTest[] => {
+  const tests = getAutomatedTests().filter((t) => t.id !== id);
+  saveAutomatedTests(tests);
+  return tests;
+};
+
+// ——— Requests within Collections ———
+
+/**
+ * Add a request to a collection's standalone requests.
+ * Returns the updated collections array.
+ */
+export const addRequestToCollection = (
+  collectionId: string,
+  request: RequestItem
+): Collection[] => {
+  const collections = getCollections();
+  const collection = collections.find((c) => c.id === collectionId);
+  if (collection) {
+    // Check if request with same id already exists (update case)
+    const existingIndex = collection.standaloneRequests.findIndex(
+      (r) => r.id === request.id
+    );
+    if (existingIndex !== -1) {
+      collection.standaloneRequests[existingIndex] = request;
+    } else {
+      collection.standaloneRequests.push(request);
+    }
+    collection.updatedAt = Date.now();
+  }
+  saveCollections(collections);
+  return collections;
+};
+
+/**
+ * Update a request in a collection (searches both standalone and folders).
+ * Returns the updated collections array.
+ */
+export const updateRequestInCollection = (
+  collectionId: string,
+  request: RequestItem
+): Collection[] => {
+  const collections = getCollections();
+  const collection = collections.find((c) => c.id === collectionId);
+  if (!collection) return collections;
+
+  // Search standalone requests
+  const standaloneIndex = collection.standaloneRequests.findIndex(
+    (r) => r.id === request.id
+  );
+  if (standaloneIndex !== -1) {
+    collection.standaloneRequests[standaloneIndex] = request;
+    collection.updatedAt = Date.now();
+    saveCollections(collections);
+    return collections;
+  }
+
+  // Search in folders recursively
+  const updateInFolder = (folder: Folder): boolean => {
+    const idx = folder.items.findIndex(
+      (item): item is RequestItem =>
+        "method" in item && item.id === request.id
+    );
+    if (idx !== -1) {
+      folder.items[idx] = request;
+      return true;
+    }
+    // Check nested folders
+    for (const item of folder.items) {
+      if ("items" in item && updateInFolder(item as Folder)) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  for (const folder of collection.folders) {
+    if (updateInFolder(folder)) {
+      collection.updatedAt = Date.now();
+      saveCollections(collections);
+      return collections;
+    }
+  }
+
+  saveCollections(collections);
+  return collections;
+};
+
+/**
+ * Delete a request from a collection.
+ * Returns the updated collections array.
+ */
+export const deleteRequestFromCollection = (
+  collectionId: string,
+  requestId: string
+): Collection[] => {
+  const collections = getCollections();
+  const collection = collections.find((c) => c.id === collectionId);
+  if (!collection) return collections;
+
+  // Remove from standalone
+  collection.standaloneRequests = collection.standaloneRequests.filter(
+    (r) => r.id !== requestId
+  );
+
+  // Remove from folders recursively
+  const deleteFromFolder = (folder: Folder): boolean => {
+    const before = folder.items.length;
+    folder.items = folder.items.filter(
+      (item) => !("method" in item && item.id === requestId)
+    );
+    // Check nested folders
+    for (const item of folder.items) {
+      if ("items" in item) {
+        deleteFromFolder(item as Folder);
+      }
+    }
+    return folder.items.length !== before;
+  };
+
+  for (const folder of collection.folders) {
+    deleteFromFolder(folder);
+  }
+
+  collection.updatedAt = Date.now();
+  saveCollections(collections);
+  return collections;
+};
+
+/**
+ * Find a request by ID across all collections.
+ * Returns the request and the collection it belongs to.
+ */
+export const findRequestInCollections = (
+  requestId: string
+): { request: RequestItem; collectionId: string } | null => {
+  const collections = getCollections();
+
+  for (const collection of collections) {
+    // Check standalone
+    const standalone = collection.standaloneRequests.find(
+      (r) => r.id === requestId
+    );
+    if (standalone) {
+      return { request: standalone, collectionId: collection.id };
+    }
+
+    // Check folders recursively
+    const searchFolder = (
+      folder: Folder
+    ): RequestItem | null => {
+      for (const item of folder.items) {
+        if ("method" in item && item.id === requestId) {
+          return item;
+        }
+        if ("items" in item) {
+          const found = searchFolder(item as Folder);
+          if (found) return found;
+        }
+      }
+      return null;
+    };
+
+    for (const folder of collection.folders) {
+      const found = searchFolder(folder);
+      if (found) {
+        return { request: found, collectionId: collection.id };
+      }
+    }
+  }
+
+  return null;
+};

@@ -1,4 +1,4 @@
-# Krestreq — Offline API Testing Desktop App
+# Kestreq — Offline API Testing Desktop App
 
 A lightweight, offline-first desktop application for testing REST APIs. Built with **Tauri 2**, **React 19**, and **TypeScript**.
 

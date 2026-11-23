@@ -1,7 +1,7 @@
 {
   "name": "krestreq-backend",
   "version": "0.1.0",
-  "description": "Mock API server for Krestreq API testing app",
+  "description": "Mock API server for Kestreq API testing app",
   "main": "dist/index.js",
   "scripts": {
     "dev": "tsx watch src/index.ts",

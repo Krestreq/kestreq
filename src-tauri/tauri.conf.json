@@ -1,6 +1,6 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
-  "productName": "Krestreq",
+  "productName": "Kestreq",
   "version": "0.1.0",
   "identifier": "com.krestreq.app",
   "build": {
@@ -12,7 +12,7 @@
   "app": {
     "windows": [
       {
-        "title": "Krestreq",
+        "title": "Kestreq",
         "width": 1280,
         "height": 800,
         "minWidth": 960,
