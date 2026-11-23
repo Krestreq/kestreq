@@ -1,0 +1,321 @@
+/* ============================================
+   Sidebar — Premium Navigation
+   ============================================ */
+.sidebar {
+  width: var(--sidebar-width);
+  min-width: var(--sidebar-width);
+  height: 100%;
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  transition: width var(--transition-base), min-width var(--transition-base), opacity var(--transition-base);
+  overflow: hidden;
+  position: relative;
+  z-index: 1;
+}
+
+.sidebar.collapsed {
+  width: 0;
+  min-width: 0;
+  border-right: none;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ——— Sidebar Header / Brand ——— */
+.sidebar-header {
+  display: flex;
+  align-items: center;
+  padding: var(--space-3) var(--space-3) var(--space-2);
+  flex-shrink: 0;
+}
+
+.sidebar-brand {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-md);
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: -0.3px;
+}
+
+.brand-icon {
+  color: var(--accent);
+}
+
+/* ——— Sidebar Tabs ——— */
+.sidebar-tabs {
+  display: flex;
+  padding: 0 var(--space-3);
+  gap: var(--space-1);
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.sidebar-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-1);
+  background: transparent;
+  border: none;
+  border-bottom: 2px solid transparent;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.sidebar-tab:hover {
+  color: var(--text-secondary);
+  background: var(--accent-subtle);
+}
+
+.sidebar-tab.active {
+  color: var(--accent);
+  border-bottom-color: var(--accent);
+}
+
+/* ——— Sidebar Content ——— */
+.sidebar-content {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-3);
+}
+
+/* ——— Add Collection Button ——— */
+.add-collection-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  margin-bottom: var(--space-3);
+  background: var(--accent-subtle);
+  border: 1px dashed var(--accent-border);
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-collection-btn:hover {
+  background: var(--accent);
+  color: var(--text-inverse);
+  border-style: solid;
+  border-color: var(--accent);
+}
+
+/* ——— Collection List ——— */
+.collection-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.collection-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-2);
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.collection-item:hover {
+  background: var(--accent-subtle);
+}
+
+.collection-item.active {
+  background: var(--accent-subtle);
+}
+
+.collection-item.active .collection-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.collection-chevron {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.collection-item.active .collection-chevron {
+  color: var(--accent);
+}
+
+.collection-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  transition: color var(--transition-fast);
+}
+
+.collection-edit-input {
+  flex: 1;
+  padding: 3px 6px;
+  font-size: var(--font-size-sm);
+  background: var(--input-bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  outline: none;
+}
+
+/* ——— Collection Actions ——— */
+.collection-actions {
+  display: flex;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.collection-item:hover .collection-actions {
+  opacity: 1;
+}
+
+.collection-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.collection-action-btn:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+}
+
+.collection-action-btn.delete:hover {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+/* ——— History ——— */
+.history-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-1) 0;
+  margin-bottom: var(--space-2);
+}
+
+.history-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-weight: 500;
+}
+
+.clear-history-btn {
+  padding: 2px var(--space-2);
+  font-size: var(--font-size-xs);
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.clear-history-btn:hover {
+  border-color: var(--error);
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+.history-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.history-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.history-item:hover {
+  background: var(--accent-subtle);
+}
+
+.history-method-badge {
+  font-size: 9px;
+  font-weight: 700;
+  font-family: var(--font-mono);
+  padding: 2px 5px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-surface);
+  letter-spacing: 0.3px;
+  min-width: 36px;
+  text-align: center;
+  flex-shrink: 0;
+}
+
+.history-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+}
+
+.history-status {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  min-width: 28px;
+  text-align: right;
+  flex-shrink: 0;
+}
+
+/* Status colors using CSS variables */
+.status-200, .status-201, .status-202, .status-204 {
+  color: var(--status-2xx);
+}
+
+.status-301, .status-302, .status-304, .status-307, .status-308 {
+  color: var(--status-3xx);
+}
+
+.status-400, .status-401, .status-403, .status-404, .status-405, .status-409, .status-429 {
+  color: var(--status-4xx);
+}
+
+.status-500, .status-501, .status-502, .status-503, .status-504 {
+  color: var(--status-5xx);
+}

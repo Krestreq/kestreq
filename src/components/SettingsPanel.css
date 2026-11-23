@@ -1,0 +1,321 @@
+/* ============================================
+   Settings Panel — Premium Settings Drawer
+   ============================================ */
+
+.settings-overlay {
+  position: fixed;
+  inset: 0;
+  background: var(--overlay-bg);
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn var(--transition-base);
+}
+
+.settings-panel {
+  width: 520px;
+  max-height: 80vh;
+  background: var(--dropdown-bg);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  display: flex;
+  flex-direction: column;
+  animation: scaleIn var(--transition-base);
+  overflow: hidden;
+}
+
+/* ——— Header ——— */
+.settings-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4);
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.settings-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-lg);
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.settings-close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.settings-close-btn:hover {
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+/* ——— Body ——— */
+.settings-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+/* ——— Section ——— */
+.settings-section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.settings-section-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.settings-section-header h3 {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin: 0;
+}
+
+/* ——— Group ——— */
+.settings-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.settings-label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-secondary);
+}
+
+/* ——— Theme Grid ——— */
+.theme-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.theme-category {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.theme-category-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.theme-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+
+.theme-option {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  background: transparent;
+  border: 2px solid transparent;
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 64px;
+}
+
+.theme-option:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+}
+
+.theme-option.active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+}
+
+.theme-preview {
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-primary);
+  position: relative;
+  overflow: hidden;
+}
+
+.theme-preview::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: var(--header-bg, #181825);
+}
+
+.theme-preview::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60%;
+  background: var(--bg-primary, #1e1e2e);
+}
+
+/* Theme preview colors */
+.theme-preview[data-theme="dark"] { background: #1e1e2e; }
+.theme-preview[data-theme="dark"]::before { background: #181825; }
+.theme-preview[data-theme="dark"]::after { background: #1e1e2e; }
+
+.theme-preview[data-theme="light"] { background: #ffffff; }
+.theme-preview[data-theme="light"]::before { background: #f8f9fb; }
+.theme-preview[data-theme="light"]::after { background: #ffffff; }
+
+.theme-preview[data-theme="midnight"] { background: #0d1117; }
+.theme-preview[data-theme="midnight"]::before { background: #010409; }
+.theme-preview[data-theme="midnight"]::after { background: #0d1117; }
+
+.theme-preview[data-theme="dracula"] { background: #282a36; }
+.theme-preview[data-theme="dracula"]::before { background: #1e1f29; }
+.theme-preview[data-theme="dracula"]::after { background: #282a36; }
+
+.theme-preview[data-theme="nord"] { background: #2e3440; }
+.theme-preview[data-theme="nord"]::before { background: #272c36; }
+.theme-preview[data-theme="nord"]::after { background: #2e3440; }
+
+.theme-preview[data-theme="solarized-dark"] { background: #002b36; }
+.theme-preview[data-theme="solarized-dark"]::before { background: #001e27; }
+.theme-preview[data-theme="solarized-dark"]::after { background: #002b36; }
+
+.theme-preview[data-theme="solarized-light"] { background: #fdf6e3; }
+.theme-preview[data-theme="solarized-light"]::before { background: #eee8d5; }
+.theme-preview[data-theme="solarized-light"]::after { background: #fdf6e3; }
+
+.theme-preview[data-theme="monokai"] { background: #272822; }
+.theme-preview[data-theme="monokai"]::before { background: #1e1f1c; }
+.theme-preview[data-theme="monokai"]::after { background: #272822; }
+
+.theme-preview[data-theme="high-contrast"] { background: #000000; }
+.theme-preview[data-theme="high-contrast"]::before { background: #0a0a0a; }
+.theme-preview[data-theme="high-contrast"]::after { background: #000000; }
+
+.theme-name {
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  text-align: center;
+}
+
+.theme-option.active .theme-name {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+/* ——— Settings Row ——— */
+.settings-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3);
+  background: var(--bg-surface);
+  border-radius: var(--radius-lg);
+  gap: var(--space-3);
+}
+
+.settings-row-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.settings-row-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.settings-row-description {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin-top: 2px;
+}
+
+/* ——— Density Options ——— */
+.density-options {
+  display: flex;
+  gap: var(--space-2);
+}
+
+.density-option {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-surface);
+  border: 2px solid transparent;
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.density-option:hover {
+  border-color: var(--accent-border);
+  color: var(--text-primary);
+}
+
+.density-option.active {
+  border-color: var(--accent);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* ——— Toggle Switch (in settings) ——— */
+.settings-row .toggle-switch {
+  flex-shrink: 0;
+}
+
+/* ——— Responsive ——— */
+@media (max-width: 560px) {
+  .settings-panel {
+    width: calc(100% - var(--space-8));
+    max-height: 90vh;
+  }
+}

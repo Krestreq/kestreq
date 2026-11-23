@@ -1,0 +1,174 @@
+/* ============================================
+   Response Panel — Premium Viewer
+   ============================================ */
+.response-panel {
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid var(--border-primary);
+  background: var(--panel-bg);
+  flex: 1;
+  min-height: 0;
+}
+
+/* ——— Response Status Bar ——— */
+.response-status-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-secondary);
+  border-bottom: 1px solid var(--border-primary);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.response-status-code {
+  font-weight: 700;
+  font-size: var(--font-size-md);
+  font-family: var(--font-mono);
+}
+
+.status-success { color: var(--status-2xx); }
+.status-redirect { color: var(--status-3xx); }
+.status-client-error { color: var(--status-4xx); }
+.status-server-error { color: var(--status-5xx); }
+.status-unknown { color: var(--text-tertiary); }
+
+.response-status-text {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.status-separator {
+  color: var(--border-primary);
+  user-select: none;
+}
+
+.response-meta-item {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  font-family: var(--font-mono);
+}
+
+/* ——— Response Tabs ——— */
+.response-tabs {
+  justify-content: space-between;
+}
+
+.response-actions {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  padding: var(--space-2) 0;
+}
+
+.response-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.response-action-btn:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+/* ——— Response Content ——— */
+.response-content {
+  flex: 1;
+  overflow: auto;
+  padding: var(--density-padding-lg);
+}
+
+/* ——— Response Body ——— */
+.response-body {
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  line-height: 1.6;
+  white-space: pre;
+  margin: 0;
+  padding: 0;
+  color: var(--text-primary);
+  tab-size: 2;
+}
+
+.response-body.wrap {
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.response-body.nowrap {
+  overflow-x: auto;
+}
+
+/* ——— Response Headers ——— */
+.response-headers {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.header-row {
+  display: flex;
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  border-radius: var(--radius-md);
+  font-size: var(--font-size-sm);
+  transition: background var(--transition-fast);
+}
+
+.header-row:hover {
+  background: var(--accent-subtle);
+}
+
+.header-key {
+  font-weight: 600;
+  color: var(--accent);
+  min-width: 160px;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+  flex-shrink: 0;
+}
+
+.header-value {
+  color: var(--text-primary);
+  word-break: break-all;
+  font-family: var(--font-mono);
+  font-size: var(--font-size-sm);
+}
+
+/* ——— Response Info ——— */
+.response-info {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  max-width: 420px;
+}
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  padding-bottom: var(--space-2);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.info-label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.info-value {
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  font-family: var(--font-mono);
+}
