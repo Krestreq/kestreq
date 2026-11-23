@@ -1,0 +1,147 @@
+.environments-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-8);
+}
+
+.environment-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.environment-card.active {
+  border-color: var(--accent-border);
+}
+
+.environment-card:hover {
+  border-color: var(--accent-border);
+}
+
+.environment-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-3) var(--space-4);
+  gap: var(--space-3);
+}
+
+.environment-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+}
+
+.environment-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.environment-dot.active {
+  background: var(--success);
+  box-shadow: 0 0 6px var(--success);
+}
+
+.environment-name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+  cursor: pointer;
+}
+
+.environment-name:hover {
+  color: var(--accent);
+}
+
+.environment-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.environment-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.active-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--success);
+  background: var(--success-bg);
+  padding: 2px var(--space-2);
+  border-radius: var(--radius-full);
+  margin-right: var(--space-1);
+}
+
+.environment-variables {
+  border-top: 1px solid var(--border-primary);
+}
+
+.variable-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr auto auto;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.variable-value-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.secret-toggle {
+  position: absolute;
+  right: var(--space-1);
+  background: transparent;
+  border: none;
+  color: var(--text-tertiary);
+  cursor: pointer;
+  padding: 2px;
+  display: flex;
+  align-items: center;
+}
+
+.secret-toggle:hover {
+  color: var(--text-primary);
+}
+
+.variable-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+.add-variable-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  width: 100%;
+  padding: var(--space-2);
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  background: transparent;
+  border: none;
+  border-top: 1px solid var(--border-secondary);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.add-variable-btn:hover {
+  background: var(--accent-subtle);
+  color: var(--accent);
+}

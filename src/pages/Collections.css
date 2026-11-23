@@ -1,0 +1,199 @@
+.collections-page {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6) var(--space-8);
+  animation: fadeIn var(--transition-slow);
+}
+
+.collections-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.collection-row {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.collection-row.active {
+  border-color: var(--accent-border);
+}
+
+.collection-row:hover {
+  border-color: var(--accent-border);
+}
+
+.collection-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.collection-header:hover {
+  background: var(--bg-elevated);
+}
+
+.expand-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.expand-btn:hover {
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+.collection-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-md);
+  background: var(--accent-subtle);
+  color: var(--accent);
+}
+
+.collection-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.collection-name {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.collection-meta {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.collection-actions {
+  display: flex;
+  gap: var(--space-1);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.collection-header:hover .collection-actions {
+  opacity: 1;
+}
+
+.edit-input {
+  flex: 1;
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  background: var(--input-bg);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-sm);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.collection-content {
+  padding: 0 var(--space-4) var(--space-3);
+  border-top: 1px solid var(--border-primary);
+}
+
+.folder-section {
+  padding-top: var(--space-2);
+}
+
+.folder-header {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) 0;
+  font-size: var(--font-size-xs);
+  color: var(--text-secondary);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.folder-count {
+  color: var(--text-tertiary);
+  font-weight: 400;
+}
+
+.folder-items {
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+
+.request-item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.request-item:hover {
+  background: var(--accent-subtle);
+}
+
+.request-method {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  min-width: 40px;
+}
+
+/* Method color indicators */
+.request-method[data-method="GET"] { color: var(--method-get); }
+.request-method[data-method="POST"] { color: var(--method-post); }
+.request-method[data-method="PUT"] { color: var(--method-put); }
+.request-method[data-method="PATCH"] { color: var(--method-patch); }
+.request-method[data-method="DELETE"] { color: var(--method-delete); }
+.request-method[data-method="HEAD"] { color: var(--method-head); }
+.request-method[data-method="OPTIONS"] { color: var(--method-options); }
+
+.request-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.request-open-icon {
+  color: var(--text-tertiary);
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.request-item:hover .request-open-icon {
+  opacity: 1;
+}
+
+.collection-empty {
+  padding: var(--space-4);
+  text-align: center;
+  font-size: var(--font-size-sm);
+  color: var(--text-tertiary);
+}

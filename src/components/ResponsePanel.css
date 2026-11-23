@@ -35,9 +35,15 @@
 .status-unknown { color: var(--text-tertiary); }
 
 .response-status-text {
-  color: var(--text-secondary);
   font-weight: 500;
+  color: var(--text-secondary);
 }
+
+/* Status text color indicators */
+.response-status-text.status-success { color: var(--status-2xx); }
+.response-status-text.status-redirect { color: var(--status-3xx); }
+.response-status-text.status-client-error { color: var(--status-4xx); }
+.response-status-text.status-server-error { color: var(--status-5xx); }
 
 .status-separator {
   color: var(--border-primary);
@@ -45,9 +51,14 @@
 }
 
 .response-meta-item {
-  color: var(--text-tertiary);
+  color: var(--text-secondary);
   font-size: var(--font-size-xs);
   font-family: var(--font-mono);
+}
+
+.response-meta-item span {
+  color: var(--text-primary);
+  font-weight: 600;
 }
 
 /* ——— Response Tabs ——— */

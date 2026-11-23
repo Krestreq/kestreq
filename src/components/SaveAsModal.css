@@ -1,0 +1,248 @@
+/* ============================================
+   Save As Modal — Premium Dialog
+   ============================================ */
+
+.save-as-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  animation: fadeIn var(--transition-fast);
+}
+
+.save-as-modal {
+  width: 420px;
+  max-width: 90vw;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-xl);
+  animation: scaleIn var(--transition-fast);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ——— Header ——— */
+.save-as-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.save-as-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.close-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* ——— Request Name ——— */
+.save-as-request-name {
+  padding: var(--space-3) var(--space-5);
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.save-as-request-name strong {
+  color: var(--text-primary);
+  font-weight: 600;
+}
+
+/* ——— Collections List ——— */
+.save-as-collections {
+  padding: var(--space-3) var(--space-5);
+}
+
+.save-as-section-title {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: var(--space-2);
+}
+
+.collection-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.collection-option {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  text-align: left;
+}
+
+.collection-option:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+}
+
+.collection-option svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.collection-option-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.collection-option-count {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+/* ——— Empty State ——— */
+.save-as-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-5);
+  color: var(--text-tertiary);
+}
+
+.save-as-empty svg {
+  opacity: 0.5;
+}
+
+.save-as-empty p {
+  font-size: var(--font-size-sm);
+  text-align: center;
+}
+
+/* ——— New Collection ——— */
+.save-as-new {
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border-primary);
+}
+
+.create-new-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: transparent;
+  border: 1px dashed var(--border-secondary);
+  border-radius: var(--radius-md);
+  color: var(--accent);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.create-new-btn:hover {
+  background: var(--accent-subtle);
+  border-color: var(--accent-border);
+}
+
+/* ——— New Collection Form ——— */
+.new-collection-form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.new-collection-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  font-size: var(--font-size-sm);
+  font-family: inherit;
+  outline: none;
+  transition: border-color var(--transition-fast);
+}
+
+.new-collection-input:focus {
+  border-color: var(--accent);
+}
+
+.new-collection-actions {
+  display: flex;
+  gap: var(--space-2);
+  justify-content: flex-end;
+}
+
+.btn-cancel {
+  padding: var(--space-1) var(--space-3);
+  background: transparent;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+  color: var(--text-secondary);
+  font-size: var(--font-size-sm);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-cancel:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.btn-create {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3);
+  background: var(--accent);
+  border: 1px solid var(--accent);
+  border-radius: var(--radius-md);
+  color: var(--accent-text);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.btn-create:hover {
+  opacity: 0.9;
+}

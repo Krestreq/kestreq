@@ -14,6 +14,9 @@ export const DEFAULT_SETTINGS: import("@/types").AppSettings = {
   sslVerification: true,
   timeout: 30,
   maxHistoryEntries: 100,
+  defaultMethod: "GET",
+  defaultLayout: "vertical",
+  sidebarWidth: 260,
 };
 
 /** Default auth config */
@@ -64,3 +67,17 @@ export const createBlankEnvironment = (): import("@/types").Environment => ({
   createdAt: Date.now(),
   updatedAt: Date.now(),
 });
+
+/** Create a blank automated test */
+export const createBlankTest = (): import("@/types").AutomatedTest => {
+  const now = Date.now();
+  return {
+    id: crypto.randomUUID(),
+    name: "New Test",
+    request: createBlankRequest(),
+    testCases: [],
+    lastResult: "pending",
+    createdAt: now,
+    updatedAt: now,
+  };
+};

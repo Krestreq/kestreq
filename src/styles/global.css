@@ -835,6 +835,165 @@ body {
   min-height: 0;
 }
 
+/* ——— Workspace Screen ——— */
+.workspace-screen {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-height: 0;
+}
+
+/* ——— Main Content ——— */
+.main-content {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+  min-width: 0;
+}
+
+/* ——— History Page ——— */
+.history-page {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.history-list-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-4) var(--space-8);
+}
+
+.history-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.history-card {
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: all var(--transition-fast);
+}
+
+.history-card:hover {
+  border-color: var(--accent-border);
+}
+
+.history-card-main {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3) var(--space-4);
+}
+
+.history-method-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 700;
+  font-family: var(--font-mono);
+  letter-spacing: 0.5px;
+  min-width: 44px;
+  padding: 2px var(--space-1);
+  background: var(--bg-elevated);
+  border-radius: var(--radius-sm);
+  text-align: center;
+}
+
+/* Method color indicators */
+.history-method-badge[data-method="GET"] { color: var(--method-get); }
+.history-method-badge[data-method="POST"] { color: var(--method-post); }
+.history-method-badge[data-method="PUT"] { color: var(--method-put); }
+.history-method-badge[data-method="PATCH"] { color: var(--method-patch); }
+.history-method-badge[data-method="DELETE"] { color: var(--method-delete); }
+.history-method-badge[data-method="HEAD"] { color: var(--method-head); }
+.history-method-badge[data-method="OPTIONS"] { color: var(--method-options); }
+
+.history-card-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.history-card-name {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--text-primary);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-card-url {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.history-status-badge {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  font-family: var(--font-mono);
+  padding: 2px var(--space-1);
+  border-radius: var(--radius-sm);
+}
+
+.history-status-badge.status-success {
+  color: var(--success);
+  background: var(--success-bg);
+}
+
+.history-status-badge.status-warning {
+  color: var(--warning);
+  background: var(--warning-bg);
+}
+
+.history-status-badge.status-error {
+  color: var(--error);
+  background: var(--error-bg);
+}
+
+.history-duration {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  font-family: var(--font-mono);
+}
+
+.history-card-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-2) var(--space-4);
+  border-top: 1px solid var(--border-secondary);
+}
+
+.history-timestamp {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+}
+
+.history-card-actions {
+  display: flex;
+  gap: var(--space-1);
+}
+
+/* ——— Filter Label ——— */
+.filter-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
 /* ============================================
    SELECTION & FOCUS
    ============================================ */
@@ -956,11 +1115,25 @@ body {
   padding: 0 var(--space-1);
 }
 
+/* Status bar color indicators */
+.status-bar-item.sending {
+  color: var(--warning);
+}
+
+.status-bar-item.saved {
+  color: var(--success);
+}
+
+.status-bar-item.error {
+  color: var(--error);
+}
+
 .status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
   background: var(--success);
+  box-shadow: 0 0 4px var(--success);
 }
 
 .status-dot.error {

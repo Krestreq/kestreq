@@ -90,7 +90,9 @@ export const ResponsePanel = () => {
         <span className={`response-status-code status-${statusCategory}`}>
           {currentResponse.status}
         </span>
-        <span className="response-status-text">{currentResponse.statusText}</span>
+        <span className={`response-status-text status-${statusCategory}`}>
+          {currentResponse.statusText}
+        </span>
         <span className="status-separator" />
         <span className="response-meta-item">
           {formatDuration(currentResponse.duration)}

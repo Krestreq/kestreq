@@ -23,6 +23,9 @@ export const formatTimestamp = (timestamp: number): string => {
   return date.toLocaleString();
 };
 
+/** Alias for formatTimestamp */
+export const formatDateTime = formatTimestamp;
+
 /** Ensure a URL has a protocol prefix */
 export const ensureProtocol = (url: string): string => {
   // If it already has a protocol (e.g. http://, https://, ftp://), return as-is
