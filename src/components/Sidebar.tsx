@@ -10,7 +10,6 @@ import {
   Download,
   Settings,
   Command,
-  Search,
   PanelLeftClose,
   PanelLeftOpen,
 } from "lucide-react";
@@ -41,7 +40,7 @@ export const Sidebar = () => {
       {/* Sidebar header */}
       <div className="sidebar-header">
         <div className="sidebar-brand">
-          <Search size={18} className="brand-icon" />
+          <img src="/logo.png" alt="Kestreq" className="brand-logo" />
           <span className="brand-text">Kestreq</span>
         </div>
         <button

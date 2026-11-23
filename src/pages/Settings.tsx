@@ -11,9 +11,9 @@ import {
   Info,
   Check,
   Sparkles,
-  Globe,
   Zap,
   HardDrive,
+  Save,
 } from "lucide-react";
 import "./shared.css";
 import "./Settings.css";
@@ -35,7 +35,7 @@ const SECTION_NAV: { key: SettingsSection; label: string; icon: any }[] = [
 ];
 
 export const Settings = () => {
-  const { settings, updateSettings, setTheme } = useAppStore();
+  const { settings, updateSettings, setTheme, autoSave, setAutoSave } = useAppStore();
   const [activeSection, setActiveSection] = useState<SettingsSection>("appearance");
 
   const darkThemes = THEMES.filter((t) => t.category === "dark");
@@ -241,7 +241,7 @@ export const Settings = () => {
               <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
-                    <Globe size={16} />
+                    <Shield size={16} />
                   </div>
                   <div>
                     <h3 className="settings-card-title">Request Configuration</h3>
@@ -314,6 +314,28 @@ export const Settings = () => {
                       checked={settings.sslVerification}
                       onChange={(e) =>
                         updateSettings({ sslVerification: e.target.checked })
+                      }
+                    />
+                    <span className="toggle-slider" />
+                  </label>
+                </div>
+
+                <div className="settings-row">
+                  <div className="settings-row-info">
+                    <div className="settings-row-title">
+                      <Save size={14} />
+                      <span>Auto Save</span>
+                    </div>
+                    <p className="settings-row-description">
+                      Automatically save requests when editing in the workspace
+                    </p>
+                  </div>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={autoSave}
+                      onChange={(e) =>
+                        setAutoSave(e.target.checked)
                       }
                     />
                     <span className="toggle-slider" />
@@ -437,7 +459,7 @@ export const Settings = () => {
             <div className="settings-section-animate">
               <div className="settings-card about-card">
                 <div className="about-logo">
-                  <Globe size={32} />
+                  <img src="/logo.png" alt="Kestreq" className="about-logo-img" />
                 </div>
                 <h2 className="about-title">Kestreq</h2>
                 <p className="about-version">Version 0.1.0</p>

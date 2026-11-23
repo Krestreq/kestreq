@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useAppStore } from "@/store/appStore";
 import { createBlankCollection } from "@/utils/constants";
 import { formatDateTime } from "@/utils/helpers";
+import { deleteRequestFromCollection } from "@/services/storage";
 import type { Collection, RequestItem } from "@/types";
 import {
   FolderOpen,
@@ -13,7 +14,10 @@ import {
   ChevronDown,
   Copy,
   ExternalLink,
+  FileText,
 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { EditRequest } from "@/components/EditRequest";
 import "./Collections.css";
 
 export const Collections = () => {
@@ -25,6 +29,16 @@ export const Collections = () => {
     updateCollection,
     deleteCollection,
     openRequest,
+    openConfirm,
+    closeConfirm,
+    confirmDialog,
+    openEditRequest,
+    closeEditRequest,
+    editModalOpen,
+    editModalRequest,
+    updateRequestInStore,
+    loadCollections,
+    openNewRequestModal,
   } = useAppStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -67,10 +81,20 @@ export const Collections = () => {
     setEditingId(null);
   };
 
-  const handleDeleteCollection = (id: string) => {
-    if (confirm("Are you sure you want to delete this collection?")) {
-      deleteCollection(id);
-    }
+  const handleDeleteCollection = (collection: Collection) => {
+    const itemCount = collection.standaloneRequests.length;
+    openConfirm({
+      variant: "danger",
+      title: "Delete Collection",
+      message: `Are you sure you want to delete "${collection.name}"?`,
+      detail: itemCount > 0 ? `This will also delete ${itemCount} request${itemCount > 1 ? "s" : ""} in this collection. This action cannot be undone.` : undefined,
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteCollection(collection.id);
+        closeConfirm();
+      },
+    });
   };
 
   const handleDuplicateCollection = (collection: Collection) => {
@@ -86,6 +110,32 @@ export const Collections = () => {
 
   const handleOpenRequest = (request: RequestItem, collectionId: string) => {
     openRequest(request, collectionId);
+  };
+
+  const handleEditRequest = (request: RequestItem) => {
+    openEditRequest(request);
+  };
+
+  const handleDeleteRequest = (request: RequestItem, collectionId: string) => {
+    openConfirm({
+      variant: "danger",
+      title: "Delete Request",
+      message: `Are you sure you want to delete "${request.name || request.url}"?`,
+      detail: "This action cannot be undone.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteRequestFromCollection(collectionId, request.id);
+        loadCollections();
+        closeConfirm();
+      },
+    });
+  };
+
+  const handleSaveEditRequest = (updatedRequest: RequestItem) => {
+    updateRequestInStore(updatedRequest);
+    closeEditRequest();
+    loadCollections();
   };
 
   const countItems = (collection: Collection) => {
@@ -115,6 +165,14 @@ export const Collections = () => {
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
+          <button
+            className="btn btn-secondary"
+            onClick={() => openNewRequestModal(activeCollectionId || undefined)}
+            title="Create a new request"
+          >
+            <FileText size={14} />
+            <span>New Request</span>
+          </button>
           <button className="btn btn-primary" onClick={handleAddCollection}>
             <Plus size={14} />
             <span>New Collection</span>
@@ -224,7 +282,7 @@ export const Collections = () => {
                       className="action-btn delete"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteCollection(collection.id);
+                        handleDeleteCollection(collection);
                       }}
                       data-tooltip="Delete"
                     >
@@ -262,7 +320,29 @@ export const Collections = () => {
                                 <span className="request-name">
                                   {item.name || item.url}
                                 </span>
-                                <ExternalLink size={12} className="request-open-icon" />
+                                <div className="request-item-actions">
+                                  <button
+                                    className="request-action-btn"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditRequest(item);
+                                    }}
+                                    title="Edit"
+                                  >
+                                    <Pencil size={11} />
+                                  </button>
+                                  <button
+                                    className="request-action-btn request-action-btn--delete"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteRequest(item, collection.id);
+                                    }}
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={11} />
+                                  </button>
+                                  <ExternalLink size={12} className="request-open-icon" />
+                                </div>
                               </div>
                             ))}
                         </div>
@@ -285,7 +365,29 @@ export const Collections = () => {
                         <span className="request-name">
                           {request.name || request.url}
                         </span>
-                        <ExternalLink size={12} className="request-open-icon" />
+                        <div className="request-item-actions">
+                          <button
+                            className="request-action-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditRequest(request);
+                            }}
+                            title="Edit"
+                          >
+                            <Pencil size={11} />
+                          </button>
+                          <button
+                            className="request-action-btn request-action-btn--delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteRequest(request, collection.id);
+                            }}
+                            title="Delete"
+                          >
+                            <Trash2 size={11} />
+                          </button>
+                          <ExternalLink size={12} className="request-open-icon" />
+                        </div>
                       </div>
                     ))}
 
@@ -301,6 +403,29 @@ export const Collections = () => {
           })}
         </div>
       )}
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        variant={confirmDialog.variant}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        detail={confirmDialog.detail}
+        confirmLabel={confirmDialog.confirmLabel}
+        cancelLabel={confirmDialog.cancelLabel}
+        onConfirm={() => {
+          if (confirmDialog.onConfirm) confirmDialog.onConfirm();
+        }}
+        onCancel={closeConfirm}
+      />
+
+      {/* Edit Request Modal */}
+      <EditRequest
+        isOpen={editModalOpen}
+        request={editModalRequest}
+        onSave={handleSaveEditRequest}
+        onClose={closeEditRequest}
+      />
     </div>
   );
 };

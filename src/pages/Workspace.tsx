@@ -6,6 +6,7 @@ import { RequestPanel } from "@/components/RequestPanel";
 import { ResponsePanel } from "@/components/ResponsePanel";
 import { CommandPalette } from "@/components/CommandPalette";
 import { SaveAsModal } from "@/components/SaveAsModal";
+import { NewRequestModal } from "@/components/NewRequestModal";
 import { Home } from "@/pages/Home";
 import { Collections } from "@/pages/Collections";
 import { History } from "@/pages/History";
@@ -157,6 +158,9 @@ export const Workspace = () => {
           onRequestName={currentRequest.name || "Untitled Request"}
         />
       )}
+
+      {/* New Request Modal */}
+      <NewRequestModal />
     </div>
   );
 };

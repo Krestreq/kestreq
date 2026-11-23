@@ -17,6 +17,7 @@ export const DEFAULT_SETTINGS: import("@/types").AppSettings = {
   defaultMethod: "GET",
   defaultLayout: "vertical",
   sidebarWidth: 260,
+  autoSave: false,
 };
 
 /** Default auth config */

@@ -11,6 +11,15 @@ export interface HeaderParam {
 /** Request body types */
 export type BodyType = "none" | "raw" | "json" | "xml" | "form" | "formData";
 
+/** Form data entry for multipart/form-data bodies */
+export interface FormDataEntry {
+  key: string;
+  value: string;
+  fileType: "text" | "file";
+  fileName?: string;
+  enabled: boolean;
+}
+
 /** Authentication types */
 export type AuthType = "none" | "basic" | "bearer" | "apiKey" | "oauth2";
 
@@ -190,4 +199,7 @@ export interface AppSettings {
   defaultMethod: HttpMethod;
   defaultLayout: "horizontal" | "vertical";
   sidebarWidth: number;
+  
+  // Auto save
+  autoSave: boolean;
 }

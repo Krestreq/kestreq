@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAppStore } from "@/store/appStore";
 import { createBlankHeader } from "@/utils/constants";
-import type { BodyType, AuthType, HeaderParam } from "@/types";
+import type { BodyType, AuthType, HeaderParam, FormDataEntry } from "@/types";
 import {
   Search,
   List,
@@ -9,7 +9,10 @@ import {
   Shield,
   Plus,
   Trash2,
+  ChevronDown,
 } from "lucide-react";
+import { AutocompleteInput } from "@/components/AutocompleteInput";
+import { FormDataEditor } from "@/components/FormDataEditor";
 import "./RequestPanel.css";
 
 const BODY_TYPES: { value: BodyType; label: string }[] = [
@@ -38,6 +41,8 @@ const TABS = [
 export const RequestPanel = () => {
   const { currentRequest, setCurrentRequest } = useAppStore();
   const [activeTab, setActiveTab] = useState<"params" | "headers" | "body" | "auth">("params");
+  const [bodyDropdownOpen, setBodyDropdownOpen] = useState(false);
+  const [formDataEntries, setFormDataEntries] = useState<FormDataEntry[]>([]);
 
   // ——— Query Params ———
   const queryParams = currentRequest.queryParams;
@@ -85,7 +90,8 @@ export const RequestPanel = () => {
     addItem: () => void,
     removeItem: (index: number) => void,
     updateItem: (index: number, field: keyof HeaderParam, value: string | boolean) => void,
-    placeholder: string
+    placeholder: string,
+    context: "params" | "headers" = "headers"
   ) => (
     <div className="kv-editor">
       {items.length === 0 && (
@@ -101,21 +107,20 @@ export const RequestPanel = () => {
       <div className="kv-rows">
         {items.map((item, index) => (
           <div key={index} className={`kv-row ${!item.enabled ? "disabled" : ""}`}>
-            <input
-              type="text"
-              className="kv-input kv-input-key"
-              placeholder="Key"
+            <AutocompleteInput
               value={item.key}
-              onChange={(e) => updateItem(index, "key", e.target.value)}
-              aria-label={`${placeholder} key ${index + 1}`}
+              onChange={(val) => updateItem(index, "key", val)}
+              placeholder="Key"
+              keyName={item.key}
+              suggestions={context === "headers" ? undefined : undefined}
+              ariaLabel={`${placeholder} key ${index + 1}`}
             />
-            <input
-              type="text"
-              className="kv-input kv-input-value"
-              placeholder="Value"
+            <AutocompleteInput
               value={item.value}
-              onChange={(e) => updateItem(index, "value", e.target.value)}
-              aria-label={`${placeholder} value ${index + 1}`}
+              onChange={(val) => updateItem(index, "value", val)}
+              placeholder="Value"
+              keyName={item.key}
+              ariaLabel={`${placeholder} value ${index + 1}`}
             />
             <div className="kv-actions">
               <label className="toggle-switch" data-tooltip={item.enabled ? "Disable" : "Enable"}>
@@ -171,45 +176,71 @@ export const RequestPanel = () => {
         {activeTab === "params" &&
           renderKeyValueEditor(
             queryParams, setQueryParams, addQueryParam, removeQueryParam, updateQueryParam,
-            "Param"
+            "Param", "params"
           )}
 
         {activeTab === "headers" &&
           renderKeyValueEditor(
             headers, setHeaders, addHeader, removeHeader, updateHeader,
-            "Header"
+            "Header", "headers"
           )}
 
         {/* Body */}
         {activeTab === "body" && (
           <div className="body-section">
-            <div className="body-type-selector">
-              {BODY_TYPES.map((type) => (
-                <button
-                  key={type.value}
-                  className={`body-type-btn ${currentRequest.bodyType === type.value ? "active" : ""}`}
-                  onClick={() => setBodyType(type.value)}
-                >
-                  {type.label}
-                </button>
-              ))}
+            {/* Body Type Dropdown */}
+            <div className="body-type-dropdown-wrapper">
+              <button
+                className="body-type-dropdown"
+                onClick={() => setBodyDropdownOpen(!bodyDropdownOpen)}
+                aria-label="Select body type"
+                aria-expanded={bodyDropdownOpen}
+              >
+                <span className="body-type-dropdown-label">
+                  {BODY_TYPES.find((t) => t.value === currentRequest.bodyType)?.label ?? "None"}
+                </span>
+                <ChevronDown size={14} className={`body-type-chevron ${bodyDropdownOpen ? "open" : ""}`} />
+              </button>
+              {bodyDropdownOpen && (
+                <div className="body-type-dropdown-menu" role="listbox">
+                  {BODY_TYPES.map((type) => (
+                    <button
+                      key={type.value}
+                      className={`body-type-dropdown-item ${currentRequest.bodyType === type.value ? "active" : ""}`}
+                      onClick={() => {
+                        setBodyType(type.value);
+                        setBodyDropdownOpen(false);
+                      }}
+                      role="option"
+                      aria-selected={currentRequest.bodyType === type.value}
+                    >
+                      {type.label}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
-            {currentRequest.bodyType !== "none" && (
-              <textarea
-                className="body-textarea"
-                placeholder={
-                  currentRequest.bodyType === "json"
-                    ? '{"key": "value"}'
-                    : currentRequest.bodyType === "xml"
-                    ? "<root>\n  <key>value</key>\n</root>"
-                    : "Request body..."
-                }
-                value={currentRequest.body}
-                onChange={(e) => setBody(e.target.value)}
-                spellCheck={false}
-              />
-            )}
-            {currentRequest.bodyType === "none" && (
+
+            {/* Body Content */}
+            {currentRequest.bodyType === "formData" ? (
+              <FormDataEditor entries={formDataEntries} onChange={setFormDataEntries} />
+            ) : currentRequest.bodyType !== "none" ? (
+              <div className="body-textarea-wrapper">
+                <textarea
+                  className="body-textarea"
+                  placeholder={
+                    currentRequest.bodyType === "json"
+                      ? '{"key": "value"}'
+                      : currentRequest.bodyType === "xml"
+                      ? "<root>\n  <key>value</key>\n</root>"
+                      : "Request body..."
+                  }
+                  value={currentRequest.body}
+                  onChange={(e) => setBody(e.target.value)}
+                  spellCheck={false}
+                />
+              </div>
+            ) : (
               <div className="empty-state">
                 <FileText size={32} className="empty-state-icon" />
                 <p className="empty-state-title">No body</p>

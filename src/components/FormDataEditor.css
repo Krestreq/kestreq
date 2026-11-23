@@ -1,0 +1,258 @@
+/* ============================================
+   Form Data Editor — Multipart/Form-Data
+   ============================================ */
+
+.formdata-editor {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+/* ——— Empty State ——— */
+.formdata-empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-6) var(--space-4);
+  text-align: center;
+}
+
+.formdata-empty-icon {
+  color: var(--text-tertiary);
+  opacity: 0.5;
+}
+
+.formdata-empty-title {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.formdata-empty-description {
+  font-size: var(--font-size-xs);
+  color: var(--text-tertiary);
+  margin: 0;
+  max-width: 240px;
+}
+
+/* ——— Header ——— */
+.formdata-header {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px 100px;
+  gap: var(--space-2);
+  padding: var(--space-1) 0;
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* ——— Rows ——— */
+.formdata-rows {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.formdata-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr 80px 100px;
+  gap: var(--space-2);
+  align-items: center;
+  animation: fadeInUp var(--transition-fast);
+}
+
+.formdata-row.disabled {
+  opacity: 0.45;
+}
+
+/* ——— Inputs ——— */
+.formdata-input {
+  padding: var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+  width: 100%;
+}
+
+.formdata-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.formdata-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+/* ——— Value Wrapper ——— */
+.formdata-value-wrapper {
+  display: flex;
+  align-items: center;
+  min-height: 32px;
+}
+
+/* ——— File Display ——— */
+.formdata-file-display {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  width: 100%;
+  padding: var(--space-1) var(--space-2);
+  background: var(--bg-elevated);
+  border: 1px solid var(--accent-border);
+  border-radius: var(--radius-md);
+  animation: fadeIn var(--transition-fast);
+}
+
+.formdata-file-icon {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.formdata-file-name {
+  flex: 1;
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  color: var(--accent);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.formdata-file-remove {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  flex-shrink: 0;
+}
+
+.formdata-file-remove:hover {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+/* ——— Type Selector ——— */
+.formdata-type-selector {
+  display: flex;
+  gap: var(--space-1);
+  align-items: center;
+  justify-content: center;
+}
+
+.formdata-type-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border-secondary);
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  position: relative;
+}
+
+.formdata-type-btn:hover {
+  border-color: var(--accent-border);
+  color: var(--text-secondary);
+  background: var(--accent-subtle);
+}
+
+.formdata-type-btn.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-inverse);
+}
+
+.formdata-file-hidden {
+  display: none;
+}
+
+/* ——— Actions ——— */
+.formdata-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.formdata-remove-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.formdata-remove-btn:hover {
+  background: var(--error-bg);
+  color: var(--error);
+}
+
+/* ——— Toggle Switch (shared with KV editor) ——— */
+.formdata-editor .toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 18px;
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.formdata-editor .toggle-switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.formdata-editor .toggle-slider {
+  position: absolute;
+  inset: 0;
+  background: var(--border-primary);
+  border-radius: var(--radius-full);
+  transition: background var(--transition-fast);
+}
+
+.formdata-editor .toggle-slider::before {
+  content: "";
+  position: absolute;
+  width: 14px;
+  height: 14px;
+  left: 2px;
+  top: 2px;
+  background: #fff;
+  border-radius: 50%;
+  transition: transform var(--transition-fast);
+  box-shadow: var(--shadow-sm);
+}
+
+.formdata-editor .toggle-switch input:checked + .toggle-slider {
+  background: var(--accent);
+}
+
+.formdata-editor .toggle-switch input:checked + .toggle-slider::before {
+  transform: translateX(16px);
+}

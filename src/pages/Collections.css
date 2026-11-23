@@ -187,8 +187,46 @@
   transition: opacity var(--transition-fast);
 }
 
+/* ——— Request Item Actions ——— */
+.request-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.request-item:hover .request-item-actions {
+  opacity: 1;
+}
+
 .request-item:hover .request-open-icon {
   opacity: 1;
+}
+
+.request-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.request-action-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.request-action-btn--delete:hover {
+  background: var(--error-bg);
+  color: var(--error);
 }
 
 .collection-empty {
