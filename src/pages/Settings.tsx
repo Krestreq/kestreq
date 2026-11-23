@@ -51,7 +51,7 @@ export const Settings = () => {
           </div>
           <div>
             <h1 className="settings-title">Settings</h1>
-            <p className="settings-subtitle">Customize your KrestReq experience</p>
+            <p className="settings-subtitle">Customize your Kestreq experience</p>
           </div>
         </div>
       </div>
@@ -439,7 +439,7 @@ export const Settings = () => {
                 <div className="about-logo">
                   <Globe size={32} />
                 </div>
-                <h2 className="about-title">KrestReq</h2>
+                <h2 className="about-title">Kestreq</h2>
                 <p className="about-version">Version 0.1.0</p>
                 <p className="about-description">
                   Offline-first API development and testing environment.

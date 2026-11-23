@@ -42,7 +42,7 @@ export const Sidebar = () => {
       <div className="sidebar-header">
         <div className="sidebar-brand">
           <Search size={18} className="brand-icon" />
-          <span className="brand-text">KrestReq</span>
+          <span className="brand-text">Kestreq</span>
         </div>
         <button
           className="icon-btn sidebar-toggle"

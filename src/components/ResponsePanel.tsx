@@ -1,5 +1,6 @@
 import { useAppStore } from "@/store/appStore";
 import { formatJson, formatDuration, formatBytes, getStatusCategory } from "@/utils/helpers";
+import { JsonHighlighter } from "@/components/JsonHighlighter";
 import {
   FileText,
   List,
@@ -143,7 +144,13 @@ export const ResponsePanel = () => {
 
       {/* Tab content */}
       <div className="response-content">
-        {responseTab === "body" && (
+        {responseTab === "body" && isJsonResponse && (
+          <JsonHighlighter
+            json={responseBody}
+            className={`response-body ${settings.wrapResponse ? "wrap" : "nowrap"}`}
+          />
+        )}
+        {responseTab === "body" && !isJsonResponse && (
           <pre
             className={`response-body ${settings.wrapResponse ? "wrap" : "nowrap"}`}
           >

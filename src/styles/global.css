@@ -1,5 +1,5 @@
 /* ============================================
-   KrestReq — Premium Design System
+   Kestreq — Premium Design System
    Centralized design tokens, themes, animations
    ============================================ */
 
@@ -138,6 +138,14 @@
   --status-4xx: #fab387;
   --status-5xx: #f38ba8;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #89b4fa;
+  --json-string: #a6e3a1;
+  --json-number: #fab387;
+  --json-boolean: #cba6f7;
+  --json-null: #f38ba8;
+  --json-bracket: #6c7086;
+
   --scrollbar-thumb: #45475a;
   --scrollbar-thumb-hover: #585b70;
 
@@ -209,6 +217,14 @@
   --status-4xx: #ea580c;
   --status-5xx: #d20f39;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #1e66f5;
+  --json-string: #2d9a3e;
+  --json-number: #ea580c;
+  --json-boolean: #7c3aed;
+  --json-null: #d20f39;
+  --json-bracket: #9a9ab0;
+
   --scrollbar-thumb: #c4c6cc;
   --scrollbar-thumb-hover: #a0a2a8;
 
@@ -277,6 +293,14 @@
   --status-3xx: #d29922;
   --status-4xx: #f0883e;
   --status-5xx: #f85149;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #58a6ff;
+  --json-string: #3fb950;
+  --json-number: #f0883e;
+  --json-boolean: #bc8cff;
+  --json-null: #f85149;
+  --json-bracket: #484f58;
 
   --scrollbar-thumb: #30363d;
   --scrollbar-thumb-hover: #484f58;
@@ -347,6 +371,14 @@
   --status-4xx: #ffb86c;
   --status-5xx: #ff5555;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #8be9fd;
+  --json-string: #50fa7b;
+  --json-number: #ffb86c;
+  --json-boolean: #bd93f9;
+  --json-null: #ff5555;
+  --json-bracket: #6272a4;
+
   --scrollbar-thumb: #44475a;
   --scrollbar-thumb-hover: #6272a4;
 
@@ -415,6 +447,14 @@
   --status-3xx: #ebcb8b;
   --status-4xx: #d08770;
   --status-5xx: #bf616a;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #88c0d0;
+  --json-string: #a3be8c;
+  --json-number: #d08770;
+  --json-boolean: #b48ead;
+  --json-null: #bf616a;
+  --json-bracket: #7b88a1;
 
   --scrollbar-thumb: #4c566a;
   --scrollbar-thumb-hover: #616e88;
@@ -485,6 +525,14 @@
   --status-4xx: #cb4b16;
   --status-5xx: #dc322f;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #268bd2;
+  --json-string: #859900;
+  --json-number: #cb4b16;
+  --json-boolean: #6c71c4;
+  --json-null: #dc322f;
+  --json-bracket: #586e75;
+
   --scrollbar-thumb: #0a4050;
   --scrollbar-thumb-hover: #2aa198;
 
@@ -553,6 +601,14 @@
   --status-3xx: #b58900;
   --status-4xx: #cb4b16;
   --status-5xx: #dc322f;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #268bd2;
+  --json-string: #859900;
+  --json-number: #cb4b16;
+  --json-boolean: #6c71c4;
+  --json-null: #dc322f;
+  --json-bracket: #93a1a1;
 
   --scrollbar-thumb: #ddd6c1;
   --scrollbar-thumb-hover: #ccc4a6;
@@ -623,6 +679,14 @@
   --status-4xx: #fd971f;
   --status-5xx: #f92672;
 
+  /* JSON Syntax Highlighting */
+  --json-key: #66d9ef;
+  --json-string: #a6e22e;
+  --json-number: #fd971f;
+  --json-boolean: #ae81ff;
+  --json-null: #f92672;
+  --json-bracket: #75715e;
+
   --scrollbar-thumb: #3e3d32;
   --scrollbar-thumb-hover: #4e4d40;
 
@@ -691,6 +755,14 @@
   --status-3xx: #ffcc00;
   --status-4xx: #ff8800;
   --status-5xx: #ff3366;
+
+  /* JSON Syntax Highlighting */
+  --json-key: #00d4ff;
+  --json-string: #00ff88;
+  --json-number: #ff8800;
+  --json-boolean: #cc66ff;
+  --json-null: #ff3366;
+  --json-bracket: #808080;
 
   --scrollbar-thumb: #404040;
   --scrollbar-thumb-hover: #606060;

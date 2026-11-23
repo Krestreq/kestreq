@@ -63,7 +63,7 @@ export const Home = () => {
         <div className="welcome-content">
           <div className="welcome-header">
             <Sparkles size={24} className="welcome-sparkle" />
-            <h1 className="welcome-title">Welcome to KrestReq</h1>
+            <h1 className="welcome-title">Welcome to Kestreq</h1>
           </div>
           <p className="welcome-subtitle">
             Your premium offline-first API development environment.

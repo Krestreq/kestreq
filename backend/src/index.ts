@@ -22,9 +22,9 @@ app.get("/", (_req: Request, res: Response) => {
     success: true,
     status: 200,
     data: {
-      name: "Krestreq Backend",
+      name: "Kestreq Backend",
       version: "0.1.0",
-      description: "Mock API server for Krestreq API testing app",
+      description: "Mock API server for Kestreq API testing app",
     },
     timestamp: new Date().toISOString(),
   });
@@ -40,7 +40,7 @@ app.use(errorHandler);
 
 // ——— Start Server ———
 app.listen(PORT, () => {
-  console.log(`🚀 Krestreq Backend running on http://localhost:${PORT}`);
+  console.log(`🚀 Kestreq Backend running on http://localhost:${PORT}`);
   console.log(`   API: http://localhost:${PORT}/api`);
   console.log(`   Health: http://localhost:${PORT}/api/health`);
 });

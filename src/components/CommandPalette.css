@@ -1,5 +1,5 @@
 /* ============================================
-   Command Palette
+   Command Palette — Premium Overlay
    ============================================ */
 
 .command-palette-overlay {
@@ -10,29 +10,43 @@
   align-items: flex-start;
   justify-content: center;
   padding-top: 15vh;
-  background: var(--overlay-bg);
-  animation: fadeIn var(--transition-fast);
+  background: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  animation: fadeIn var(--transition-base);
 }
 
 .command-palette {
-  width: 520px;
-  max-height: 400px;
+  width: 540px;
+  max-height: 420px;
   display: flex;
   flex-direction: column;
-  background: var(--dropdown-bg);
+  background: var(--bg-surface);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-xl);
-  box-shadow: var(--shadow-xl);
-  animation: scaleIn var(--transition-fast);
+  box-shadow: var(--shadow-xl), 0 0 40px rgba(108, 99, 255, 0.06);
+  animation: modalSlideIn var(--transition-base);
   overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(12px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
 .command-palette-search {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-3) var(--space-4);
+  gap: var(--space-3);
+  padding: var(--space-4) var(--space-5);
   border-bottom: 1px solid var(--border-primary);
+  background: var(--bg-elevated);
 }
 
 .command-search-icon {
@@ -44,10 +58,11 @@
   flex: 1;
   border: none;
   background: transparent;
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-md);
   color: var(--text-primary);
   outline: none;
   font-family: var(--font-sans);
+  font-weight: 500;
 }
 
 .command-search-input::placeholder {
@@ -58,8 +73,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 20px;
-  height: 20px;
+  width: 22px;
+  height: 22px;
   background: var(--bg-surface);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
@@ -70,12 +85,14 @@
 
 .command-close-btn:hover {
   color: var(--text-primary);
+  background: var(--bg-elevated);
+  transform: scale(1.1);
 }
 
 .command-palette-results {
   flex: 1;
   overflow-y: auto;
-  padding: var(--space-2);
+  padding: var(--space-3);
 }
 
 .command-group {
@@ -83,25 +100,26 @@
 }
 
 .command-group-label {
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-2) var(--space-2);
   font-size: var(--font-size-xs);
-  font-weight: 600;
+  font-weight: 700;
   color: var(--text-tertiary);
   text-transform: uppercase;
-  letter-spacing: 0.5px;
+  letter-spacing: 0.8px;
 }
 
 .command-item {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
+  gap: var(--space-3);
   width: 100%;
-  padding: var(--space-2) var(--space-2);
+  padding: var(--space-2) var(--space-3);
   background: transparent;
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   color: var(--text-primary);
   font-size: var(--font-size-sm);
+  font-weight: 500;
   cursor: pointer;
   transition: all var(--transition-fast);
   text-align: left;
@@ -110,11 +128,22 @@
 .command-item:hover,
 .command-item:focus-visible {
   background: var(--accent-subtle);
+  border-color: var(--accent-border);
+  transform: translateX(4px);
+}
+
+.command-item:active {
+  transform: translateX(4px) scale(0.98);
 }
 
 .command-item-icon {
   color: var(--text-tertiary);
   flex-shrink: 0;
+  transition: color var(--transition-fast);
+}
+
+.command-item:hover .command-item-icon {
+  color: var(--accent);
 }
 
 .command-item-label {
@@ -124,15 +153,17 @@
 .command-item-arrow {
   color: var(--text-tertiary);
   opacity: 0;
-  transition: opacity var(--transition-fast);
+  transform: translateX(-4px);
+  transition: all var(--transition-fast);
 }
 
 .command-item:hover .command-item-arrow {
   opacity: 1;
+  transform: translateX(0);
 }
 
 .command-empty {
-  padding: var(--space-6);
+  padding: var(--space-8);
   text-align: center;
   font-size: var(--font-size-sm);
   color: var(--text-tertiary);
@@ -141,9 +172,10 @@
 .command-palette-footer {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
-  padding: var(--space-2) var(--space-4);
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
   border-top: 1px solid var(--border-primary);
+  background: var(--bg-secondary);
 }
 
 .command-hint {
@@ -155,10 +187,12 @@
 }
 
 .command-hint kbd {
-  padding: 1px 4px;
+  padding: 2px 5px;
   font-size: 10px;
   font-family: var(--font-mono);
+  font-weight: 600;
   background: var(--bg-surface);
   border: 1px solid var(--border-primary);
   border-radius: var(--radius-sm);
+  color: var(--text-secondary);
 }

@@ -151,9 +151,9 @@ export const Import = () => {
             <button className="export-option-card">
               <FileText size={20} />
               <div className="export-option-info">
-                <span className="export-option-label">KrestReq Format</span>
+                <span className="export-option-label">Kestreq Format</span>
                 <span className="export-option-description">
-                  Export all collections in KrestReq native format
+                  Export all collections in Kestreq native format
                 </span>
               </div>
               <Download size={16} className="export-option-icon" />

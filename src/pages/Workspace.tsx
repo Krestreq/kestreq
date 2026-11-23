@@ -139,7 +139,7 @@ export const Workspace = () => {
             </div>
             <div className="status-bar-right">
               <div className="status-bar-item">
-                <span>KrestReq v0.1.0</span>
+                <span>Kestreq v0.1.0</span>
               </div>
             </div>
           </div>
