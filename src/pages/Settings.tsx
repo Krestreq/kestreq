@@ -1,10 +1,6 @@
 import { useState } from "react";
 import { useAppStore, THEMES } from "@/store/appStore";
 import {
-  Palette,
-  Droplets,
-  Monitor,
-  LayoutGrid,
   Clock,
   Database,
   Shield,
@@ -27,7 +23,7 @@ const DENSITY_OPTIONS = [
 type SettingsSection = "appearance" | "request" | "response" | "data" | "about";
 
 const SECTION_NAV: { key: SettingsSection; label: string; icon: any }[] = [
-  { key: "appearance", label: "Appearance", icon: Palette },
+  { key: "appearance", label: "Appearance", icon: Shield },
   { key: "request", label: "Request Defaults", icon: Shield },
   { key: "response", label: "Response", icon: Clock },
   { key: "data", label: "Data & Storage", icon: Database },
@@ -85,7 +81,7 @@ export const Settings = () => {
               <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
-                    <Palette size={16} />
+                    <Shield size={16} />
                   </div>
                   <div>
                     <h3 className="settings-card-title">Theme</h3>
@@ -140,7 +136,7 @@ export const Settings = () => {
               </div>
 
               {/* Visual Effects */}
-              <div className="settings-card">
+              {/* <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
                     <Sparkles size={16} />
@@ -151,9 +147,9 @@ export const Settings = () => {
                       Customize the visual style of your interface
                     </p>
                   </div>
-                </div>
+                </div> */}
 
-                <div className="settings-row">
+                {/* <div className="settings-row">
                   <div className="settings-row-info">
                     <div className="settings-row-title">
                       <Droplets size={14} />
@@ -173,12 +169,12 @@ export const Settings = () => {
                     />
                     <span className="toggle-slider" />
                   </label>
-                </div>
+                </div> */}
 
-                <div className="settings-row">
+                {/* <div className="settings-row">
                   <div className="settings-row-info">
                     <div className="settings-row-title">
-                      <Monitor size={14} />
+                      <Shield size={14} />
                       <span>macOS Window Controls</span>
                     </div>
                     <p className="settings-row-description">
@@ -195,14 +191,14 @@ export const Settings = () => {
                     />
                     <span className="toggle-slider" />
                   </label>
-                </div>
-              </div>
+                </div> */}
+              {/* </div> */}
 
               {/* Interface Density */}
               <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
-                    <LayoutGrid size={16} />
+                    <Shield size={16} />
                   </div>
                   <div>
                     <h3 className="settings-card-title">Interface Density</h3>
@@ -386,7 +382,7 @@ export const Settings = () => {
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <div className="settings-row-title">
-                      <LayoutGrid size={14} />
+                      <Shield size={14} />
                       <span>Wrap Response</span>
                     </div>
                     <p className="settings-row-description">
@@ -459,7 +455,7 @@ export const Settings = () => {
             <div className="settings-section-animate">
               <div className="settings-card about-card">
                 <div className="about-logo">
-                  <img src="/logo.png" alt="Kestreq" className="about-logo-img" />
+                  <img src="/kestreq_logo.svg" alt="Kestreq" className="about-logo-img" />
                 </div>
                 <h2 className="about-title">Kestreq</h2>
                 <p className="about-version">Version 0.1.0</p>

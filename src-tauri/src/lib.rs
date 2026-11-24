@@ -3,6 +3,7 @@ mod http_client;
 use http_client::HttpResponse;
 use serde::Deserialize;
 use std::collections::HashMap;
+use tauri::Manager;
 
 /// Parameters for sending an HTTP request from the frontend
 #[derive(Debug, Deserialize)]
@@ -56,6 +57,13 @@ async fn test_connection(url: String) -> Result<bool, String> {
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .setup(|app| {
+            if let Some(window) = app.get_webview_window("main") {
+                const APP_ICON: tauri::image::Image = tauri::include_image!("./icons/icon.png");
+                window.set_icon(APP_ICON)?;
+            }
+            Ok(())
+        })
         .plugin(tauri_plugin_opener::init())
         .invoke_handler(tauri::generate_handler![send_http_request, test_connection])
         .run(tauri::generate_context!())

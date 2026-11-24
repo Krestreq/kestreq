@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200">
+  <defs>
+    <style>
+      .cls-1{fill:#22b573}
+      .cls-2{fill:#ffffff}
+    </style>
+  </defs>
+  <title>Artboard 1</title>
+  <g>
+    <rect x="0" y="0" width="200" height="200" class="cls-1"/>
+  </g>
+  <g>
+    <g>
+      <line x1="-21.9" y1="68.842" x2="33.572" y2="112.237" class="cls-2"/>
+      <polygon points="178.228,128.171 178.534,145.412 149.196,146.846 95.211,149.486 89.375,131.948" class="cls-2"/>
+      <polygon points="62,41.7 62.275,25.374 82.811,44.1 82.2,130.896 60.607,124.497" class="cls-2"/>
+      <polygon points="73.105,159.288 55.505,153.546 67.771,134.808 85.617,140.439" class="cls-2"/>
+    </g>
+  </g>
+</svg>

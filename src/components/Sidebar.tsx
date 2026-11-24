@@ -40,7 +40,7 @@ export const Sidebar = () => {
       {/* Sidebar header */}
       <div className="sidebar-header">
         <div className="sidebar-brand">
-          <img src="/logo.png" alt="Kestreq" className="brand-logo" />
+          <img src="/kestreq_logo.svg" alt="Kestreq" className="brand-logo" />
           <span className="brand-text">Kestreq</span>
         </div>
         <button
