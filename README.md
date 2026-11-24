@@ -1,10 +1,34 @@
 # Kestreq — Offline API Testing Desktop App
 
 A lightweight, offline-first desktop application for testing REST APIs. Built with **Tauri 2**, **React 19**, and **TypeScript**.
+<?xml version="1.0" encoding="UTF-16"?>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200">
+  <defs>
+    <style>
+      .cls-1{fill:#22b573}
+      .cls-2{fill:#ffffff}
+      .cls-3{font-family:&apos;Source Sans 3&apos;, sans-serif;font-size:30px;fill:#ffffff}
+    </style>
+  </defs>
+  <title>kestreq_logo</title>
+  <g>
+    <rect x="0" y="0" width="200" height="200" class="cls-1"/>
+  </g>
+  <g>
+    <g>
+      <line x1="62.773" y1="66.56" x2="84.368" y2="83.462" class="cls-2"/>
+      <polygon points="140.797,89.524 140.896,96.264 129.446,96.859 108.378,97.954 106.121,91.104" class="cls-2"/>
+      <polygon points="95.544,55.85 95.67,49.467 103.662,56.765 103.322,90.701 94.904,88.224" class="cls-2"/>
+      <polygon points="99.74,101.813 92.879,99.588 97.687,92.247 104.644,94.428" class="cls-2"/>
+    </g>
+    <text transform="matrix(1 0 0 1 56.154 97.03)" x="0" y="30" xml:space="preserve" class="cls-3"><tspan x="0" y="30">Kestreq</tspan></text>
+  </g>
+</svg>
 
 ## Features
 
-- **HTTP Request Builder** — Compose requests with method, URL, headers, query params, body, and authentication
+- **HTTP Request Builder** — Compose requests with <img width="150" height="150" alt="kestreq_logo" src="https://github.com/user-attachments/assets/9158ee40-1a07-492e-aa5c-f72b48c3de61" />
+method, URL, headers, query params, body, and authentication
 - **Response Viewer** — View response body, headers, and metadata (status, duration, size)
 - **Collections** — Organize requests into collections for easy management
 - **Request History** — Track all sent requests with their responses
