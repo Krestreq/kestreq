@@ -12,13 +12,14 @@ import {
   Command,
   PanelLeftClose,
   PanelLeftOpen,
+  Plus,
 } from "lucide-react";
 import "./Sidebar.css";
 
 const NAV_ITEMS: { id: ScreenName; label: string; icon: any }[] = [
   { id: "home", label: "Home", icon: Home },
   { id: "workspace", label: "Workspace", icon: Send },
-  { id: "collections", label: "Collections", icon: FolderOpen },
+  { id: "collections", label: "Workspaces", icon: FolderOpen },
   { id: "history", label: "History", icon: Clock },
   { id: "environments", label: "Environments", icon: Globe },
   { id: "tests", label: "Tests", icon: TestTube2 },
@@ -33,6 +34,7 @@ export const Sidebar = () => {
     sidebarOpen,
     toggleSidebar,
     toggleCommandPalette,
+    openNewRequestModal,
   } = useAppStore();
 
   return (
@@ -51,6 +53,16 @@ export const Sidebar = () => {
           {sidebarOpen ? <PanelLeftClose size={14} /> : <PanelLeftOpen size={14} />}
         </button>
       </div>
+
+      <button
+        className="sidebar-new-request-trigger"
+        onClick={() => openNewRequestModal()}
+        aria-label="Create a new request"
+        data-tooltip={!sidebarOpen ? "New Request" : undefined}
+      >
+        <Plus size={16} />
+        <span>New Request</span>
+      </button>
 
       {/* Command Palette shortcut */}
       <button

@@ -16,7 +16,7 @@ A lightweight, offline-first desktop application for testing REST APIs. Built wi
 ## Architecture
 
 ```
-krestreq/
+Kestreq/
 ├── src/                        # React frontend
 │   ├── components/             # Reusable UI components
 │   │   ├── Header.tsx          # Request bar (method, URL, send)
@@ -132,3 +132,23 @@ npm run tauri build
 ## Recommended IDE Setup
 
 - [VS Code](https://code.visualstudio.com/) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer)
+
+## Cross-platform desktop builds
+
+The `Build desktop installers` GitHub Actions workflow builds native installers for Linux (x64 and ARM64), macOS (Intel and Apple Silicon), and Windows (x64 and ARM64). It runs when a `v*` tag is pushed or can be started manually from the repository's Actions tab. Each operating-system and architecture build is uploaded as a separate workflow artifact.
+
+The generated bundles are unsigned; macOS notarization and Windows code signing are not configured.
+
+### Build locally on macOS
+
+- Install Node.js 22, Rust stable, and the Xcode Command Line Tools (`xcode-select --install`).
+- From the repository root, run `npm ci`, then `npm run tauri dev` to launch the app.
+- Run `npm run tauri build` to create a native installer. The `.app` bundle and `.dmg` are written under `src-tauri/target/release/bundle/`.
+
+### Build locally on Windows
+
+- Install Node.js 22, Rust stable with the MSVC toolchain, Visual Studio Build Tools with the **Desktop development with C++** workload, and the Microsoft Edge WebView2 Runtime.
+- From the repository root, run `npm ci`, then `npm run tauri dev` to launch the app.
+- Run `npm run tauri build` to create native installers. The `.msi` and NSIS `.exe` are written under `src-tauri/target/release/bundle/`.
+
+Local builds target the architecture of the machine. To get all supported architectures, run the `Build desktop installers` workflow from the Actions tab; download the desired `kestreq-macos-*` or `kestreq-windows-*` artifact from its completed run.

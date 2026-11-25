@@ -1,5 +1,5 @@
 {
-  "name": "krestreq-backend",
+  "name": "Kestreq-backend",
   "version": "0.1.0",
   "description": "Mock API server for Kestreq API testing app",
   "main": "dist/index.js",

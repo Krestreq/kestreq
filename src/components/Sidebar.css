@@ -73,6 +73,39 @@
   background: var(--accent-subtle);
 }
 
+.sidebar-new-request-trigger {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  margin: var(--space-2) var(--space-2) 0;
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-inverse);
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  background: var(--accent);
+  border: none;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  transition: background var(--transition-fast);
+}
+
+.sidebar-new-request-trigger:hover {
+  background: var(--accent-hover);
+}
+
+.sidebar-new-request-trigger span {
+  white-space: nowrap;
+}
+
+.sidebar.collapsed .sidebar-new-request-trigger {
+  padding: var(--space-2);
+}
+
+.sidebar.collapsed .sidebar-new-request-trigger span {
+  display: none;
+}
+
 /* ——— Command Palette Trigger ——— */
 .command-palette-trigger {
   display: flex;

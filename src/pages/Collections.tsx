@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useAppStore } from "@/store/appStore";
-import { createBlankCollection } from "@/utils/constants";
+import { createBlankCollection, createBlankWorkspace } from "@/utils/constants";
 import { formatDateTime } from "@/utils/helpers";
 import { deleteRequestFromCollection } from "@/services/storage";
 import type { Collection, RequestItem } from "@/types";
@@ -23,6 +23,10 @@ import "./Collections.css";
 export const Collections = () => {
   const {
     collections,
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    addWorkspace,
     activeCollectionId,
     setActiveCollectionId,
     addCollection,
@@ -45,21 +49,51 @@ export const Collections = () => {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(collections.map((c) => c.id)));
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [expandedWorkspaceIds, setExpandedWorkspaceIds] = useState<Set<string>>(new Set());
+  const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState("");
 
   const filteredCollections = collections.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    workspaces.find((workspace) => workspace.id === c.workspaceId)?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredWorkspaces = workspaces.filter((workspace) =>
+    !searchQuery ||
+    workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    filteredCollections.some((collection) => collection.workspaceId === workspace.id)
   );
 
   const toggleExpand = (id: string) => {
-    const next = new Set(expandedIds);
+    const next = expandedIds.size === 0 ? new Set(collections.map((collection) => collection.id)) : new Set(expandedIds);
     if (next.has(id)) next.delete(id);
     else next.add(id);
     setExpandedIds(next);
   };
 
-  const handleAddCollection = () => {
+  const toggleWorkspace = (id: string) => {
+    const next = expandedWorkspaceIds.size === 0 ? new Set(workspaces.map((workspace) => workspace.id)) : new Set(expandedWorkspaceIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setExpandedWorkspaceIds(next);
+  };
+
+  const handleAddCollection = (workspaceId = activeWorkspaceId) => {
     const newCollection = createBlankCollection();
+    newCollection.name = `Collection ${collections.filter((collection) => collection.workspaceId === workspaceId).length + 1}`;
+    newCollection.workspaceId = workspaceId || undefined;
+    if (workspaceId) setActiveWorkspaceId(workspaceId);
     addCollection(newCollection);
+    setExpandedIds(new Set([...expandedIds, newCollection.id]));
+  };
+
+  const handleAddWorkspace = () => {
+    const name = workspaceName.trim();
+    if (!name) return;
+    const workspace = { ...createBlankWorkspace(), name };
+    addWorkspace(workspace);
+    setExpandedWorkspaceIds((current) => new Set([...current, workspace.id]));
+    setWorkspaceName("");
+    setShowWorkspaceForm(false);
   };
 
   const handleStartEdit = (collection: Collection) => {
@@ -151,8 +185,8 @@ export const Collections = () => {
       {/* Header */}
       <div className="page-header">
         <div className="page-header-left">
-          <h1 className="page-title">Collections</h1>
-          <span className="page-count">{collections.length} collections</span>
+          <h1 className="page-title">Workspaces</h1>
+          <span className="page-count">{workspaces.length} workspaces · {collections.length} collections</span>
         </div>
         <div className="page-header-right">
           <div className="search-input-wrapper">
@@ -160,49 +194,117 @@ export const Collections = () => {
             <input
               type="text"
               className="search-input"
-              placeholder="Search collections..."
+              placeholder="Search workspaces and collections..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
           <button
             className="btn btn-secondary"
-            onClick={() => openNewRequestModal(activeCollectionId || undefined)}
+            onClick={() => openNewRequestModal()}
             title="Create a new request"
           >
             <FileText size={14} />
             <span>New Request</span>
           </button>
-          <button className="btn btn-primary" onClick={handleAddCollection}>
+          <button className="btn btn-primary" onClick={() => setShowWorkspaceForm((open) => !open)}>
             <Plus size={14} />
-            <span>New Collection</span>
+            <span>New Workspace</span>
           </button>
         </div>
       </div>
 
+      {showWorkspaceForm && (
+        <form
+          className="workspace-create-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleAddWorkspace();
+          }}
+        >
+          <input
+            className="edit-input"
+            aria-label="Workspace name"
+            placeholder="e.g. Payments API"
+            value={workspaceName}
+            onChange={(event) => setWorkspaceName(event.target.value)}
+            autoFocus
+          />
+          <button className="btn btn-primary" type="submit" disabled={!workspaceName.trim()}>
+            <Plus size={14} /> Create workspace
+          </button>
+          <button className="btn btn-secondary" type="button" onClick={() => setShowWorkspaceForm(false)}>
+            Cancel
+          </button>
+        </form>
+      )}
+
       {/* Collections List */}
-      {filteredCollections.length === 0 ? (
+      {filteredWorkspaces.length === 0 ? (
         <div className="page-empty-state">
           <FolderOpen size={48} className="page-empty-icon" />
           <h3 className="page-empty-title">
-            {searchQuery ? "No collections found" : "No collections yet"}
+            {searchQuery ? "No workspaces found" : "No workspaces yet"}
           </h3>
           <p className="page-empty-description">
             {searchQuery
               ? "Try a different search term."
-              : "Create your first collection to organize your API requests."}
+              : "Create a workspace to keep related collections and requests together."}
           </p>
           {!searchQuery && (
-            <button className="btn btn-primary" onClick={handleAddCollection}>
+            <button className="btn btn-primary" onClick={() => setShowWorkspaceForm(true)}>
               <Plus size={14} />
-              <span>Create Collection</span>
+              <span>Create Workspace</span>
             </button>
           )}
         </div>
       ) : (
-        <div className="collections-list">
-          {filteredCollections.map((collection) => {
-            const isExpanded = expandedIds.has(collection.id);
+        <div className="workspaces-list">
+          {filteredWorkspaces.map((workspace) => {
+            const workspaceCollections = filteredCollections.filter((collection) => collection.workspaceId === workspace.id);
+            const isWorkspaceExpanded = expandedWorkspaceIds.has(workspace.id) || expandedWorkspaceIds.size === 0;
+            const isWorkspaceActive = activeWorkspaceId === workspace.id;
+
+            return (
+              <section key={workspace.id} className={`workspace-group ${isWorkspaceActive ? "active" : ""}`}>
+                <div className="workspace-group-header">
+                  <button
+                    className="workspace-group-toggle"
+                    onClick={() => {
+                      if (activeWorkspaceId !== workspace.id) setActiveCollectionId(null);
+                      setActiveWorkspaceId(workspace.id);
+                      toggleWorkspace(workspace.id);
+                    }}
+                    aria-expanded={isWorkspaceExpanded}
+                  >
+                    {isWorkspaceExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    <FolderOpen size={18} />
+                    <span className="workspace-group-name">{workspace.name}</span>
+                    <span className="workspace-group-meta">{workspaceCollections.length} collection{workspaceCollections.length === 1 ? "" : "s"}</span>
+                  </button>
+                  <button
+                    className="btn btn-secondary btn-sm workspace-add-collection"
+                    onClick={() => {
+                      setActiveWorkspaceId(workspace.id);
+                      handleAddCollection(workspace.id);
+                    }}
+                    title={`Add a collection to ${workspace.name}`}
+                  >
+                    <Plus size={13} /> Collection
+                  </button>
+                </div>
+                {isWorkspaceExpanded && (
+                  <div className="workspace-collections">
+                    {workspaceCollections.length === 0 && (
+                      <div className="workspace-empty">
+                        <span>No collections in this workspace yet.</span>
+                        <button className="btn btn-ghost btn-sm" onClick={() => handleAddCollection(workspace.id)}>
+                          <Plus size={13} /> Add collection
+                        </button>
+                      </div>
+                    )}
+                    {workspaceCollections.map((collection) => {
+            const isExpanded = expandedIds.has(collection.id) || expandedIds.size === 0;
             const isActive = activeCollectionId === collection.id;
             const itemCount = countItems(collection);
 
@@ -399,6 +501,11 @@ export const Collections = () => {
                   </div>
                 )}
               </div>
+            );
+                    })}
+                  </div>
+                )}
+              </section>
             );
           })}
         </div>

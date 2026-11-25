@@ -3,8 +3,6 @@ import type { ThemeName } from "@/types";
 import {
   X,
   Palette,
-  Monitor,
-  Droplets,
   MonitorCog,
   LayoutGrid,
   Sparkles,
@@ -104,55 +102,6 @@ export const SettingsPanel = () => {
               </div>
             </div>
 
-            {/* Liquid Glass */}
-            <div className="settings-group">
-              <div className="settings-row">
-                <div className="settings-row-info">
-                  <div className="settings-row-title">
-                    <Droplets size={14} />
-                    <span>Liquid Glass</span>
-                  </div>
-                  <p className="settings-row-description">
-                    Translucent surfaces with frosted-glass panels
-                  </p>
-                </div>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    checked={settings.liquidGlass}
-                    onChange={(e) =>
-                      updateSettings({ liquidGlass: e.target.checked })
-                    }
-                  />
-                  <span className="toggle-slider" />
-                </label>
-              </div>
-            </div>
-
-            {/* macOS Controls */}
-            <div className="settings-group">
-              <div className="settings-row">
-                <div className="settings-row-info">
-                  <div className="settings-row-title">
-                    <Monitor size={14} />
-                    <span>macOS Window Controls</span>
-                  </div>
-                  <p className="settings-row-description">
-                    Show traffic-light window controls in the title bar
-                  </p>
-                </div>
-                <label className="toggle-switch">
-                  <input
-                    type="checkbox"
-                    checked={settings.macOSControls}
-                    onChange={(e) =>
-                      updateSettings({ macOSControls: e.target.checked })
-                    }
-                  />
-                  <span className="toggle-slider" />
-                </label>
-              </div>
-            </div>
           </section>
 
           {/* Layout Section */}

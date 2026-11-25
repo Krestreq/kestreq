@@ -6,6 +6,7 @@ import type {
   AppSettings,
   AutomatedTest,
   RequestItem,
+  WorkspaceItem,
 } from "@/types";
 
 /**
@@ -16,6 +17,8 @@ import type {
 
 const STORAGE_KEYS = {
   COLLECTIONS: "krestreq_collections",
+  WORKSPACES: "krestreq_workspaces",
+  ACTIVE_WORKSPACE: "krestreq_active_workspace",
   HISTORY: "krestreq_history",
   ENVIRONMENTS: "krestreq_environments",
   ACTIVE_ENVIRONMENT: "krestreq_active_env",
@@ -75,6 +78,38 @@ export const deleteCollection = (id: string): Collection[] => {
   const collections = getCollections().filter((c) => c.id !== id);
   saveCollections(collections);
   return collections;
+};
+
+// ——— Workspaces ———
+
+export const getWorkspaces = (): WorkspaceItem[] =>
+  load<WorkspaceItem[]>(STORAGE_KEYS.WORKSPACES, []);
+
+export const saveWorkspaces = (workspaces: WorkspaceItem[]): void =>
+  save(STORAGE_KEYS.WORKSPACES, workspaces);
+
+export const addWorkspace = (workspace: WorkspaceItem): WorkspaceItem[] => {
+  const workspaces = [...getWorkspaces(), workspace];
+  saveWorkspaces(workspaces);
+  return workspaces;
+};
+
+export const getActiveWorkspaceId = (): string | null => {
+  try {
+    return localStorage.getItem(STORAGE_KEYS.ACTIVE_WORKSPACE);
+  } catch (e) {
+    console.error("Failed to load active workspace:", e);
+    return null;
+  }
+};
+
+export const setActiveWorkspaceId = (id: string | null): void => {
+  try {
+    if (id) localStorage.setItem(STORAGE_KEYS.ACTIVE_WORKSPACE, id);
+    else localStorage.removeItem(STORAGE_KEYS.ACTIVE_WORKSPACE);
+  } catch (e) {
+    console.error("Failed to save active workspace:", e);
+  }
 };
 
 // ——— History ———
@@ -153,7 +188,12 @@ export const getActiveEnvironment = (): Environment | undefined => {
 // ——— Settings ———
 
 export const getSettings = (defaults: AppSettings): AppSettings => {
-  const saved = load<Partial<AppSettings>>(STORAGE_KEYS.SETTINGS, {});
+  const saved = load<Partial<AppSettings> & Record<string, unknown>>(
+    STORAGE_KEYS.SETTINGS,
+    {}
+  );
+  delete saved.liquidGlass;
+  delete saved.macOSControls;
   return { ...defaults, ...saved };
 };
 

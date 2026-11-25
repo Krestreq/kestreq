@@ -15,40 +15,6 @@
   z-index: var(--z-dropdown);
 }
 
-/* ——— macOS Traffic Lights ——— */
-.traffic-lights {
-  display: flex;
-  gap: 8px;
-  padding: 0 var(--space-2);
-  margin-right: var(--space-1);
-}
-
-.traffic-light {
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  transition: opacity var(--transition-fast);
-}
-
-.traffic-light-close {
-  background: #ff5f57;
-  box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.15);
-}
-
-.traffic-light-minimize {
-  background: #febc2e;
-  box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.15);
-}
-
-.traffic-light-maximize {
-  background: #28c840;
-  box-shadow: inset 0 -1px 1px rgba(0, 0, 0, 0.15);
-}
-
-.traffic-light:hover {
-  opacity: 0.8;
-}
-
 /* ——— Icon Button ——— */
 .icon-btn {
   display: flex;
@@ -306,6 +272,13 @@
   flex-shrink: 0;
 }
 
+.header-new-request {
+  height: 32px;
+  padding: var(--space-1) var(--space-3);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
 /* ——— Responsive ——— */
 @media (max-width: 768px) {
   .request-name {
@@ -318,5 +291,14 @@
 
   .send-btn {
     padding: var(--space-1) var(--space-2);
+  }
+
+  .header-new-request {
+    width: 32px;
+    padding: var(--space-1);
+  }
+
+  .header-new-request span {
+    display: none;
   }
 }

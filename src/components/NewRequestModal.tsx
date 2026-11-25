@@ -10,6 +10,9 @@ export const NewRequestModal = () => {
   const {
     newRequestModalOpen,
     newRequestModalCollectionId,
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
     collections,
     closeNewRequestModal,
     createNewRequest,
@@ -18,6 +21,7 @@ export const NewRequestModal = () => {
   const [name, setName] = useState("");
   const [method, setMethod] = useState("GET");
   const [url, setUrl] = useState("");
+  const [selectedWorkspaceId, setSelectedWorkspaceId] = useState("");
   const [selectedCollectionId, setSelectedCollectionId] = useState("");
   const [showMethodDropdown, setShowMethodDropdown] = useState(false);
   const [showCollectionDropdown, setShowCollectionDropdown] = useState(false);
@@ -37,8 +41,11 @@ export const NewRequestModal = () => {
       setNewCollectionName("");
       setShowMethodDropdown(false);
       setShowCollectionDropdown(false);
-      // Pre-select the passed collection or the first one
-      setSelectedCollectionId(newRequestModalCollectionId || collections[0]?.id || "");
+      const requestedCollection = collections.find((collection) => collection.id === newRequestModalCollectionId);
+      const workspaceId = requestedCollection?.workspaceId || activeWorkspaceId || workspaces[0]?.id || "";
+      const workspaceCollections = collections.filter((collection) => collection.workspaceId === workspaceId);
+      setSelectedWorkspaceId(workspaceId);
+      setSelectedCollectionId(requestedCollection?.id || workspaceCollections[0]?.id || "");
       setTimeout(() => nameRef.current?.focus(), 100);
     }
   }, [newRequestModalOpen]);
@@ -75,12 +82,15 @@ export const NewRequestModal = () => {
   const handleCreate = () => {
     if (!url.trim()) return;
     let targetCollectionId = selectedCollectionId;
+    const targetWorkspaceId = selectedWorkspaceId || workspaces[0]?.id;
 
     // If creating a new collection
     if (createNewCollection && newCollectionName.trim()) {
+      if (!targetWorkspaceId) return;
       const { addCollection } = useAppStore.getState();
       const newCol = createBlankCollection();
       newCol.name = newCollectionName.trim();
+      newCol.workspaceId = targetWorkspaceId;
       addCollection(newCol);
       targetCollectionId = newCol.id;
     }
@@ -89,7 +99,10 @@ export const NewRequestModal = () => {
     createNewRequest(name, method, url, targetCollectionId);
   };
 
-  const canSubmit = url.trim() && selectedCollectionId;
+  const canSubmit = Boolean(
+    url.trim() && (createNewCollection ? newCollectionName.trim() : selectedCollectionId)
+  );
+  const workspaceCollections = collections.filter((collection) => collection.workspaceId === selectedWorkspaceId);
 
   if (!newRequestModalOpen) return null;
 
@@ -180,7 +193,29 @@ export const NewRequestModal = () => {
             </div>
           </div>
 
-          {/* Collection Selector */}
+          {/* Workspace and Collection Selectors */}
+          <div className="new-request-field">
+            <label className="new-request-label" htmlFor="nr-workspace">
+              Workspace
+            </label>
+            <select
+              id="nr-workspace"
+              className="new-request-select"
+              value={selectedWorkspaceId}
+              onChange={(event) => {
+                const workspaceId = event.target.value;
+                setSelectedWorkspaceId(workspaceId);
+                setActiveWorkspaceId(workspaceId);
+                setSelectedCollectionId(collections.find((collection) => collection.workspaceId === workspaceId)?.id || "");
+                setCreateNewCollection(false);
+              }}
+            >
+              {workspaces.map((workspace) => (
+                <option key={workspace.id} value={workspace.id}>{workspace.name}</option>
+              ))}
+            </select>
+          </div>
+
           <div className="new-request-field">
             <label className="new-request-label" htmlFor="nr-collection">
               Save to Collection
@@ -200,10 +235,10 @@ export const NewRequestModal = () => {
                   </button>
                   {showCollectionDropdown && (
                     <div className="new-request-dropdown new-request-collection-dropdown">
-                      {collections.length === 0 ? (
+                      {workspaceCollections.length === 0 ? (
                         <div className="new-request-dropdown-empty">No collections</div>
                       ) : (
-                        collections.map((c) => (
+                        workspaceCollections.map((c) => (
                           <button
                             key={c.id}
                             className={`new-request-dropdown-item ${

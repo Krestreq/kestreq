@@ -132,6 +132,23 @@
   box-shadow: 0 0 0 2px var(--accent-subtle);
 }
 
+.new-request-select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+}
+
+.new-request-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
 /* ——— URL Row ——— */
 .new-request-url-row {
   display: flex;

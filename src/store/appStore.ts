@@ -9,13 +9,20 @@ import type {
   ThemeName,
   ScreenName,
   AutomatedTest,
+  WorkspaceItem,
 } from "@/types";
-import { DEFAULT_SETTINGS, createBlankRequest } from "@/utils/constants";
+import { DEFAULT_SETTINGS, createBlankRequest, createBlankWorkspace } from "@/utils/constants";
 import {
   getCollections,
   addCollection as persistCollection,
   updateCollection as persistCollectionUpdate,
   deleteCollection as persistCollectionDelete,
+  getWorkspaces,
+  addWorkspace as persistWorkspace,
+  getActiveWorkspaceId,
+  setActiveWorkspaceId as persistActiveWorkspace,
+  saveWorkspaces,
+  saveCollections,
   addRequestToCollection as persistAddRequest,
   updateRequestInCollection as persistUpdateRequest,
   deleteRequestFromCollection as persistDeleteRequest,
@@ -61,11 +68,6 @@ const applyDensity = (density: string) => {
   document.documentElement.setAttribute("data-density", density);
 };
 
-/** Apply Liquid Glass to DOM */
-const applyLiquidGlass = (enabled: boolean) => {
-  document.documentElement.setAttribute("data-liquid-glass", String(enabled));
-};
-
 interface AppState {
   // ——— Navigation ———
   currentScreen: ScreenName;
@@ -92,6 +94,10 @@ interface AppState {
 
   // ——— Collections ———
   collections: Collection[];
+  workspaces: WorkspaceItem[];
+  activeWorkspaceId: string | null;
+  setActiveWorkspaceId: (id: string) => void;
+  addWorkspace: (workspace: WorkspaceItem) => void;
   activeCollectionId: string | null;
   setActiveCollectionId: (id: string | null) => void;
   addCollection: (collection: Collection) => void;
@@ -315,10 +321,22 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // ——— Collections ———
   collections: [],
+  workspaces: [],
+  activeWorkspaceId: null,
+  setActiveWorkspaceId: (id) => {
+    persistActiveWorkspace(id);
+    set({ activeWorkspaceId: id });
+  },
+  addWorkspace: (workspace) => {
+    const updated = persistWorkspace(workspace);
+    persistActiveWorkspace(workspace.id);
+    set({ workspaces: updated, activeWorkspaceId: workspace.id });
+  },
   activeCollectionId: null,
   setActiveCollectionId: (id) => set({ activeCollectionId: id }),
   addCollection: (collection) => {
-    const updated = persistCollection(collection);
+    const workspaceId = collection.workspaceId || get().activeWorkspaceId || get().workspaces[0]?.id;
+    const updated = persistCollection({ ...collection, workspaceId });
     set({ collections: updated });
   },
   updateCollection: (collection) => {
@@ -333,7 +351,29 @@ export const useAppStore = create<AppState>((set, get) => ({
         get().activeCollectionId === id ? null : get().activeCollectionId,
     });
   },
-  loadCollections: () => set({ collections: getCollections() }),
+  loadCollections: () => {
+    let workspaces = getWorkspaces();
+    let collections = getCollections();
+    if (workspaces.length === 0) {
+      workspaces = [createBlankWorkspace()];
+      workspaces[0].name = "My Workspace";
+      saveWorkspaces(workspaces);
+    }
+    const defaultWorkspaceId = workspaces[0].id;
+    let migratedCollections = false;
+    collections = collections.map((collection) => {
+      if (collection.workspaceId && workspaces.some((workspace) => workspace.id === collection.workspaceId)) return collection;
+      migratedCollections = true;
+      return { ...collection, workspaceId: defaultWorkspaceId };
+    });
+    if (migratedCollections) saveCollections(collections);
+    const storedActiveWorkspaceId = getActiveWorkspaceId();
+    const activeWorkspaceId = workspaces.some((workspace) => workspace.id === storedActiveWorkspaceId)
+      ? storedActiveWorkspaceId
+      : defaultWorkspaceId;
+    persistActiveWorkspace(activeWorkspaceId);
+    set({ collections, workspaces, activeWorkspaceId });
+  },
 
   // ——— History ———
   history: [],
@@ -399,7 +439,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Apply appearance changes to DOM
     if (partial.theme) applyTheme(partial.theme);
     if (partial.density) applyDensity(partial.density);
-    if (partial.liquidGlass !== undefined) applyLiquidGlass(partial.liquidGlass);
   },
   loadSettings: () => {
     const settings = loadSettings(DEFAULT_SETTINGS);
@@ -407,7 +446,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Apply loaded settings to DOM
     applyTheme(settings.theme);
     applyDensity(settings.density);
-    applyLiquidGlass(settings.liquidGlass);
   },
 
   // ——— Theme ———

@@ -100,8 +100,24 @@ export const Settings = () => {
                           key={theme.value}
                           className={`theme-option ${settings.theme === theme.value ? "active" : ""}`}
                           onClick={() => setTheme(theme.value)}
+                          aria-label={theme.label}
+                          aria-pressed={settings.theme === theme.value}
                         >
-                          <span className="theme-preview" data-theme={theme.value} />
+                          <span className="theme-preview" data-theme={theme.value} aria-hidden="true">
+                            <span className="theme-preview-toolbar">
+                              <i />
+                              <i />
+                              <i />
+                            </span>
+                            <span className="theme-preview-body">
+                              <span className="theme-preview-sidebar" />
+                              <span className="theme-preview-lines">
+                                <i />
+                                <i />
+                                <i />
+                              </span>
+                            </span>
+                          </span>
                           <span className="theme-name">{theme.label}</span>
                           {settings.theme === theme.value && (
                             <span className="theme-check">
@@ -120,8 +136,24 @@ export const Settings = () => {
                           key={theme.value}
                           className={`theme-option ${settings.theme === theme.value ? "active" : ""}`}
                           onClick={() => setTheme(theme.value)}
+                          aria-label={theme.label}
+                          aria-pressed={settings.theme === theme.value}
                         >
-                          <span className="theme-preview" data-theme={theme.value} />
+                          <span className="theme-preview" data-theme={theme.value} aria-hidden="true">
+                            <span className="theme-preview-toolbar">
+                              <i />
+                              <i />
+                              <i />
+                            </span>
+                            <span className="theme-preview-body">
+                              <span className="theme-preview-sidebar" />
+                              <span className="theme-preview-lines">
+                                <i />
+                                <i />
+                                <i />
+                              </span>
+                            </span>
+                          </span>
                           <span className="theme-name">{theme.label}</span>
                           {settings.theme === theme.value && (
                             <span className="theme-check">
@@ -134,65 +166,6 @@ export const Settings = () => {
                   </div>
                 </div>
               </div>
-
-              {/* Visual Effects */}
-              {/* <div className="settings-card">
-                <div className="settings-card-header">
-                  <div className="settings-card-icon">
-                    <Sparkles size={16} />
-                  </div>
-                  <div>
-                    <h3 className="settings-card-title">Visual Effects</h3>
-                    <p className="settings-card-description">
-                      Customize the visual style of your interface
-                    </p>
-                  </div>
-                </div> */}
-
-                {/* <div className="settings-row">
-                  <div className="settings-row-info">
-                    <div className="settings-row-title">
-                      <Droplets size={14} />
-                      <span>Liquid Glass</span>
-                    </div>
-                    <p className="settings-row-description">
-                      Translucent surfaces with frosted-glass panels
-                    </p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={settings.liquidGlass}
-                      onChange={(e) =>
-                        updateSettings({ liquidGlass: e.target.checked })
-                      }
-                    />
-                    <span className="toggle-slider" />
-                  </label>
-                </div> */}
-
-                {/* <div className="settings-row">
-                  <div className="settings-row-info">
-                    <div className="settings-row-title">
-                      <Shield size={14} />
-                      <span>macOS Window Controls</span>
-                    </div>
-                    <p className="settings-row-description">
-                      Show traffic-light window controls in the title bar
-                    </p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={settings.macOSControls}
-                      onChange={(e) =>
-                        updateSettings({ macOSControls: e.target.checked })
-                      }
-                    />
-                    <span className="toggle-slider" />
-                  </label>
-                </div> */}
-              {/* </div> */}
 
               {/* Interface Density */}
               <div className="settings-card">

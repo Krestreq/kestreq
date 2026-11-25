@@ -122,7 +122,7 @@ function getValueSuggestions(key: string): string[] {
   if (lower === "accept") return COMMON_ACCEPT_VALUES;
   if (lower === "cache-control") return COMMON_CACHE_CONTROL;
   if (lower === "authorization") return COMMON_AUTH_VALUES;
-  if (lower === "user-agent") return ["Mozilla/5.0", "KrestReq/1.0"];
+  if (lower === "user-agent") return ["Mozilla/5.0", "Kestreq/1.0"];
   if (lower === "x-requested-with") return ["XMLHttpRequest"];
   if (lower === "x-api-key" || lower === "api-key" || lower === "apikey") return ["your-api-key-here"];
   if (lower === "x-csrf-token") return ["your-csrf-token-here"];

@@ -2,8 +2,6 @@
 export const DEFAULT_SETTINGS: import("@/types").AppSettings = {
   theme: "dark",
   appearanceMode: "dark",
-  liquidGlass: false,
-  macOSControls: false,
   density: "comfortable",
   accentColor: "#6C63FF",
   fontSize: 14,
@@ -56,6 +54,14 @@ export const createBlankCollection = (): import("@/types").Collection => ({
   name: "New Collection",
   folders: [],
   standaloneRequests: [],
+  createdAt: Date.now(),
+  updatedAt: Date.now(),
+});
+
+/** Create a blank workspace */
+export const createBlankWorkspace = (): import("@/types").WorkspaceItem => ({
+  id: crypto.randomUUID(),
+  name: "New Workspace",
   createdAt: Date.now(),
   updatedAt: Date.now(),
 });

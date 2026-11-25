@@ -81,9 +81,18 @@ export interface Folder {
 export interface Collection {
   id: string;
   name: string;
+  workspaceId?: string;
   description?: string;
   folders: Folder[];
   standaloneRequests: RequestItem[];
+  createdAt: number;
+  updatedAt: number;
+}
+
+/** A workspace groups related collections */
+export interface WorkspaceItem {
+  id: string;
+  name: string;
   createdAt: number;
   updatedAt: number;
 }
@@ -178,8 +187,6 @@ export interface AppSettings {
   // Appearance
   theme: ThemeName;
   appearanceMode: AppearanceMode;
-  liquidGlass: boolean;
-  macOSControls: boolean;
   density: DensityMode;
   accentColor: string;
 
