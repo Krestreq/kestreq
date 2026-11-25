@@ -1,3 +1,4 @@
+import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "@/store/appStore";
 import type { ScreenName } from "@/types";
 import {
@@ -13,6 +14,8 @@ import {
   PanelLeftClose,
   PanelLeftOpen,
   Plus,
+  ChevronDown,
+  Check,
 } from "lucide-react";
 import "./Sidebar.css";
 
@@ -34,8 +37,25 @@ export const Sidebar = () => {
     sidebarOpen,
     toggleSidebar,
     toggleCommandPalette,
-    openNewRequestModal,
+    startNewRequest,
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    setActiveCollectionId,
   } = useAppStore();
+  const [workspaceMenuOpen, setWorkspaceMenuOpen] = useState(false);
+  const workspaceMenuRef = useRef<HTMLDivElement>(null);
+  const activeWorkspace = workspaces.find((workspace) => workspace.id === activeWorkspaceId);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (workspaceMenuRef.current && !workspaceMenuRef.current.contains(event.target as Node)) {
+        setWorkspaceMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <aside className={`sidebar ${sidebarOpen ? "open" : "collapsed"}`}>
@@ -54,9 +74,57 @@ export const Sidebar = () => {
         </button>
       </div>
 
+      <div className="workspace-switcher" ref={workspaceMenuRef}>
+        <button
+          className="workspace-switcher-trigger"
+          onClick={() => setWorkspaceMenuOpen((open) => !open)}
+          aria-expanded={workspaceMenuOpen}
+          aria-label={`Current workspace: ${activeWorkspace?.name || "Select workspace"}`}
+          data-tooltip={!sidebarOpen ? activeWorkspace?.name || "Select workspace" : undefined}
+        >
+          <FolderOpen size={15} />
+          <span className="workspace-switcher-label">
+            <span className="workspace-switcher-caption">Workspace</span>
+            <span className="workspace-switcher-name">{activeWorkspace?.name || "Select workspace"}</span>
+          </span>
+          <ChevronDown size={13} className="workspace-switcher-chevron" />
+        </button>
+        {workspaceMenuOpen && (
+          <div className="workspace-switcher-menu" role="menu">
+            <div className="workspace-switcher-menu-title">Switch workspace</div>
+            {workspaces.map((workspace) => (
+              <button
+                key={workspace.id}
+                className={`workspace-switcher-option ${workspace.id === activeWorkspaceId ? "active" : ""}`}
+                onClick={() => {
+                  setActiveWorkspaceId(workspace.id);
+                  setActiveCollectionId(null);
+                  setWorkspaceMenuOpen(false);
+                }}
+                role="menuitemradio"
+                aria-checked={workspace.id === activeWorkspaceId}
+              >
+                <span>{workspace.name}</span>
+                {workspace.id === activeWorkspaceId && <Check size={14} />}
+              </button>
+            ))}
+            <div className="workspace-switcher-divider" />
+            <button
+              className="workspace-switcher-manage"
+              onClick={() => {
+                setCurrentScreen("collections");
+                setWorkspaceMenuOpen(false);
+              }}
+            >
+              <Plus size={14} /> Manage workspaces
+            </button>
+          </div>
+        )}
+      </div>
+
       <button
         className="sidebar-new-request-trigger"
-        onClick={() => openNewRequestModal()}
+        onClick={startNewRequest}
         aria-label="Create a new request"
         data-tooltip={!sidebarOpen ? "New Request" : undefined}
       >

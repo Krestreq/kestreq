@@ -29,7 +29,7 @@ export const Header = () => {
     saveRequest,
     savedCollectionId,
     setSaveAsModalOpen,
-    openNewRequestModal,
+    startNewRequest,
   } = useAppStore();
 
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
@@ -166,7 +166,7 @@ export const Header = () => {
       <div className="header-actions">
         <button
           className="btn btn-primary header-new-request"
-          onClick={() => openNewRequestModal()}
+          onClick={startNewRequest}
           aria-label="Create a new request"
         >
           <Plus size={14} />

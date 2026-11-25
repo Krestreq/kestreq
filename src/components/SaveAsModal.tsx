@@ -10,7 +10,7 @@ interface SaveAsModalProps {
 }
 
 export const SaveAsModal = ({ isOpen, onClose, onRequestName }: SaveAsModalProps) => {
-  const { collections, addCollection, saveRequest } = useAppStore();
+  const { collections, workspaces, activeWorkspaceId, addCollection, saveRequest } = useAppStore();
   const [newCollectionName, setNewCollectionName] = useState("");
   const [showNewInput, setShowNewInput] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
@@ -54,6 +54,9 @@ export const SaveAsModal = ({ isOpen, onClose, onRequestName }: SaveAsModalProps
     onClose();
   };
 
+  const workspaceCollections = collections.filter((collection) => collection.workspaceId === activeWorkspaceId);
+  const activeWorkspace = workspaces.find((workspace) => workspace.id === activeWorkspaceId);
+
   const countItems = (col: typeof collections[0]) => {
     let count = col.standaloneRequests.length;
     col.folders.forEach((f) => { count += f.items.length; });
@@ -81,11 +84,13 @@ export const SaveAsModal = ({ isOpen, onClose, onRequestName }: SaveAsModalProps
         </div>
 
         {/* Existing collections */}
-        {collections.length > 0 ? (
+        {workspaceCollections.length > 0 ? (
           <div className="save-as-body">
-            <div className="save-as-section-label">Save to collection</div>
+            <div className="save-as-section-label">
+              Save to collection{activeWorkspace ? ` in ${activeWorkspace.name}` : ""}
+            </div>
             <div className="save-as-collection-list">
-              {collections.map((col) => (
+              {workspaceCollections.map((col) => (
                 <button
                   key={col.id}
                   className="save-as-collection-item"

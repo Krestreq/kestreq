@@ -135,9 +135,11 @@ npm run tauri build
 
 ## Cross-platform desktop builds
 
-The `Build desktop installers` GitHub Actions workflow builds native installers for Linux (x64 and ARM64), macOS (Intel and Apple Silicon), and Windows (x64 and ARM64). It runs when a `v*` tag is pushed or can be started manually from the repository's Actions tab. Each operating-system and architecture build is uploaded as a separate workflow artifact.
+The `Build desktop installers` GitHub Actions workflow builds native installers for Linux (x64 and ARM64), macOS (Intel and Apple Silicon), and Windows (x64 and ARM64). It runs when a `v*` tag is pushed or can be started manually from the repository's Actions tab. Each operating-system and architecture build is uploaded as a separate workflow artifact. When a tagged build succeeds, the `Publish GitHub release` workflow attaches all six builds to a GitHub Release for that tag. Manual builds produce workflow artifacts only.
 
-The generated bundles are unsigned; macOS notarization and Windows code signing are not configured.
+To publish a release, update the application version in `package.json`, `package-lock.json`, `src-tauri/tauri.conf.json`, `src-tauri/Cargo.toml`, and `src-tauri/Cargo.lock` to the same version, then push a matching version tag (for example, `v0.1.1`). The build must complete successfully before the release is published.
+
+The generated bundles are unsigned; macOS notarization and Windows code signing are not configured. Both workflows must be present on the repository's default branch, and GitHub Actions must be enabled with the default `GITHUB_TOKEN` permitted to create releases.
 
 ### Build locally on macOS
 

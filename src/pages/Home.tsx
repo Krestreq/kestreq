@@ -34,7 +34,7 @@ export const Home = () => {
     automatedTests,
     addCollection,
     setCurrentScreen,
-    openNewRequestModal,
+    startNewRequest,
   } = useAppStore();
 
   const recentHistory = history.slice(0, 5);
@@ -48,7 +48,7 @@ export const Home = () => {
   };
 
   const handleNewRequest = () => {
-    openNewRequestModal();
+    startNewRequest();
   };
 
   const handleNewCollection = () => {

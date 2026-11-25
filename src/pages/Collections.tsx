@@ -27,6 +27,8 @@ export const Collections = () => {
     activeWorkspaceId,
     setActiveWorkspaceId,
     addWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
     activeCollectionId,
     setActiveCollectionId,
     addCollection,
@@ -42,7 +44,7 @@ export const Collections = () => {
     editModalRequest,
     updateRequestInStore,
     loadCollections,
-    openNewRequestModal,
+    startNewRequest,
   } = useAppStore();
 
   const [searchQuery, setSearchQuery] = useState("");
@@ -52,6 +54,8 @@ export const Collections = () => {
   const [expandedWorkspaceIds, setExpandedWorkspaceIds] = useState<Set<string>>(new Set());
   const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
   const [workspaceName, setWorkspaceName] = useState("");
+  const [editingWorkspaceId, setEditingWorkspaceId] = useState<string | null>(null);
+  const [editWorkspaceName, setEditWorkspaceName] = useState("");
 
   const filteredCollections = collections.filter((c) =>
     c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -94,6 +98,31 @@ export const Collections = () => {
     setExpandedWorkspaceIds((current) => new Set([...current, workspace.id]));
     setWorkspaceName("");
     setShowWorkspaceForm(false);
+  };
+
+  const handleSaveWorkspaceName = (id: string) => {
+    const workspace = workspaces.find((item) => item.id === id);
+    if (workspace && editWorkspaceName.trim()) {
+      updateWorkspace({ ...workspace, name: editWorkspaceName.trim(), updatedAt: Date.now() });
+    }
+    setEditingWorkspaceId(null);
+  };
+
+  const handleDeleteWorkspace = (workspace: typeof workspaces[number]) => {
+    const workspaceCollections = collections.filter((collection) => collection.workspaceId === workspace.id);
+    const requestCount = workspaceCollections.reduce((total, collection) => total + countItems(collection), 0);
+    openConfirm({
+      variant: "danger",
+      title: "Delete workspace",
+      message: `Delete “${workspace.name}”?`,
+      detail: `This permanently deletes ${workspaceCollections.length} collection${workspaceCollections.length === 1 ? "" : "s"} and ${requestCount} saved request${requestCount === 1 ? "" : "s"}. This cannot be undone.`,
+      confirmLabel: "Delete workspace",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteWorkspace(workspace.id);
+        closeConfirm();
+      },
+    });
   };
 
   const handleStartEdit = (collection: Collection) => {
@@ -201,7 +230,7 @@ export const Collections = () => {
           </div>
           <button
             className="btn btn-secondary"
-            onClick={() => openNewRequestModal()}
+            onClick={startNewRequest}
             title="Create a new request"
           >
             <FileText size={14} />
@@ -268,30 +297,79 @@ export const Collections = () => {
             return (
               <section key={workspace.id} className={`workspace-group ${isWorkspaceActive ? "active" : ""}`}>
                 <div className="workspace-group-header">
-                  <button
+                  <div
                     className="workspace-group-toggle"
                     onClick={() => {
                       if (activeWorkspaceId !== workspace.id) setActiveCollectionId(null);
                       setActiveWorkspaceId(workspace.id);
                       toggleWorkspace(workspace.id);
                     }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        if (activeWorkspaceId !== workspace.id) setActiveCollectionId(null);
+                        setActiveWorkspaceId(workspace.id);
+                        toggleWorkspace(workspace.id);
+                      }
+                    }}
                     aria-expanded={isWorkspaceExpanded}
+                    role="button"
+                    tabIndex={0}
                   >
                     {isWorkspaceExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
                     <FolderOpen size={18} />
-                    <span className="workspace-group-name">{workspace.name}</span>
+                    {editingWorkspaceId === workspace.id ? (
+                      <input
+                        className="edit-input workspace-edit-input"
+                        value={editWorkspaceName}
+                        onChange={(event) => setEditWorkspaceName(event.target.value)}
+                        onBlur={() => handleSaveWorkspaceName(workspace.id)}
+                        onKeyDown={(event) => {
+                          event.stopPropagation();
+                          if (event.key === "Enter") handleSaveWorkspaceName(workspace.id);
+                          if (event.key === "Escape") setEditingWorkspaceId(null);
+                        }}
+                        onClick={(event) => event.stopPropagation()}
+                        autoFocus
+                        aria-label="Workspace name"
+                      />
+                    ) : (
+                      <span className="workspace-group-name">{workspace.name}</span>
+                    )}
                     <span className="workspace-group-meta">{workspaceCollections.length} collection{workspaceCollections.length === 1 ? "" : "s"}</span>
-                  </button>
-                  <button
-                    className="btn btn-secondary btn-sm workspace-add-collection"
-                    onClick={() => {
-                      setActiveWorkspaceId(workspace.id);
-                      handleAddCollection(workspace.id);
-                    }}
-                    title={`Add a collection to ${workspace.name}`}
-                  >
-                    <Plus size={13} /> Collection
-                  </button>
+                  </div>
+                  <div className="workspace-group-actions">
+                    <button
+                      className="action-btn"
+                      onClick={() => {
+                        setEditingWorkspaceId(workspace.id);
+                        setEditWorkspaceName(workspace.name);
+                      }}
+                      aria-label={`Rename ${workspace.name}`}
+                      title="Rename workspace"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => handleDeleteWorkspace(workspace)}
+                      aria-label={`Delete ${workspace.name}`}
+                      title={workspaces.length === 1 ? "Keep at least one workspace" : "Delete workspace"}
+                      disabled={workspaces.length === 1}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-sm workspace-add-collection"
+                      onClick={() => {
+                        setActiveWorkspaceId(workspace.id);
+                        handleAddCollection(workspace.id);
+                      }}
+                      title={`Add a collection to ${workspace.name}`}
+                    >
+                      <Plus size={13} /> Collection
+                    </button>
+                  </div>
                 </div>
                 {isWorkspaceExpanded && (
                   <div className="workspace-collections">

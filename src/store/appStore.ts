@@ -98,6 +98,8 @@ interface AppState {
   activeWorkspaceId: string | null;
   setActiveWorkspaceId: (id: string) => void;
   addWorkspace: (workspace: WorkspaceItem) => void;
+  updateWorkspace: (workspace: WorkspaceItem) => void;
+  deleteWorkspace: (id: string) => void;
   activeCollectionId: string | null;
   setActiveCollectionId: (id: string | null) => void;
   addCollection: (collection: Collection) => void;
@@ -178,6 +180,7 @@ interface AppState {
   openNewRequestModal: (collectionId?: string) => void;
   closeNewRequestModal: () => void;
   createNewRequest: (name: string, method: string, url: string, collectionId: string) => void;
+  startNewRequest: () => void;
   
   // ——— Auto Save ———
   autoSave: boolean;
@@ -331,6 +334,44 @@ export const useAppStore = create<AppState>((set, get) => ({
     const updated = persistWorkspace(workspace);
     persistActiveWorkspace(workspace.id);
     set({ workspaces: updated, activeWorkspaceId: workspace.id });
+  },
+  updateWorkspace: (workspace) => {
+    const updated = get().workspaces.map((item) => item.id === workspace.id ? workspace : item);
+    saveWorkspaces(updated);
+    set({ workspaces: updated });
+  },
+  deleteWorkspace: (id) => {
+    const state = get();
+    if (state.workspaces.length <= 1) return;
+
+    const workspaces = state.workspaces.filter((workspace) => workspace.id !== id);
+    const collections = state.collections.filter((collection) => collection.workspaceId !== id);
+    const removedCollectionIds = new Set(
+      state.collections.filter((collection) => collection.workspaceId === id).map((collection) => collection.id)
+    );
+    const activeWorkspaceId = state.activeWorkspaceId && state.activeWorkspaceId !== id &&
+      workspaces.some((workspace) => workspace.id === state.activeWorkspaceId)
+      ? state.activeWorkspaceId
+      : workspaces[0].id;
+    const currentRequestRemoved = Boolean(state.savedCollectionId && removedCollectionIds.has(state.savedCollectionId));
+
+    saveWorkspaces(workspaces);
+    saveCollections(collections);
+    persistActiveWorkspace(activeWorkspaceId);
+    set({
+      workspaces,
+      collections,
+      activeWorkspaceId,
+      activeCollectionId: state.activeCollectionId && removedCollectionIds.has(state.activeCollectionId)
+        ? null
+        : state.activeCollectionId,
+      ...(currentRequestRemoved ? {
+        currentRequest: createBlankRequest(),
+        currentResponse: null,
+        savedRequestId: null,
+        savedCollectionId: null,
+      } : {}),
+    });
   },
   activeCollectionId: null,
   setActiveCollectionId: (id) => set({ activeCollectionId: id }),
@@ -535,6 +576,13 @@ export const useAppStore = create<AppState>((set, get) => ({
       newRequestModalCollectionId: null,
     });
   },
+  startNewRequest: () => set({
+    currentRequest: createBlankRequest(),
+    currentResponse: null,
+    savedRequestId: null,
+    savedCollectionId: null,
+    currentScreen: "workspace",
+  }),
   
   // ——— Auto Save ———
   autoSave: false,
