@@ -31,6 +31,12 @@ jobs:
           target_commitish: ${{ github.event.workflow_run.head_sha }}
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: release-assets/**/*
+          files: |
+            release-assets/**/*.AppImage
+            release-assets/**/*.deb
+            release-assets/**/*.rpm
+            release-assets/**/*.dmg
+            release-assets/**/*.msi
+            release-assets/**/*.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
