@@ -1,0 +1,36 @@
+name: Publish GitHub release
+
+on:
+  workflow_run:
+    workflows: [Build desktop installers]
+    types: [completed]
+
+permissions:
+  actions: read
+  contents: write
+
+jobs:
+  publish:
+    if: ${{ github.event.workflow_run.conclusion == 'success' && startsWith(github.event.workflow_run.head_branch, 'v') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download installers from the completed build
+        uses: actions/download-artifact@v4
+        with:
+          pattern: kestreq-*
+          path: release-assets
+          merge-multiple: false
+          run-id: ${{ github.event.workflow_run.id }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Publish GitHub release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.workflow_run.head_branch }}
+          name: Kestreq ${{ github.event.workflow_run.head_branch }}
+          target_commitish: ${{ github.event.workflow_run.head_sha }}
+          generate_release_notes: true
+          fail_on_unmatched_files: true
+          files: release-assets/**/*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

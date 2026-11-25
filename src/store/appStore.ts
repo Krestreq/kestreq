@@ -9,15 +9,23 @@ import type {
   ThemeName,
   ScreenName,
   AutomatedTest,
+  WorkspaceItem,
 } from "@/types";
-import { DEFAULT_SETTINGS, createBlankRequest } from "@/utils/constants";
+import { DEFAULT_SETTINGS, createBlankRequest, createBlankWorkspace } from "@/utils/constants";
 import {
   getCollections,
   addCollection as persistCollection,
   updateCollection as persistCollectionUpdate,
   deleteCollection as persistCollectionDelete,
+  getWorkspaces,
+  addWorkspace as persistWorkspace,
+  getActiveWorkspaceId,
+  setActiveWorkspaceId as persistActiveWorkspace,
+  saveWorkspaces,
+  saveCollections,
   addRequestToCollection as persistAddRequest,
   updateRequestInCollection as persistUpdateRequest,
+  deleteRequestFromCollection as persistDeleteRequest,
   getHistory,
   addToHistory as persistHistory,
   clearHistory as persistClearHistory,
@@ -60,11 +68,6 @@ const applyDensity = (density: string) => {
   document.documentElement.setAttribute("data-density", density);
 };
 
-/** Apply Liquid Glass to DOM */
-const applyLiquidGlass = (enabled: boolean) => {
-  document.documentElement.setAttribute("data-liquid-glass", String(enabled));
-};
-
 interface AppState {
   // ——— Navigation ———
   currentScreen: ScreenName;
@@ -81,6 +84,8 @@ interface AppState {
   savedCollectionId: string | null;
   saveRequest: (collectionId?: string) => void;
   openRequest: (request: RequestItem, collectionId: string) => void;
+  deleteRequest: () => void;
+  updateRequestInStore: (request: RequestItem) => void;
 
   // ——— Response ———
   currentResponse: ResponseItem | null;
@@ -89,6 +94,12 @@ interface AppState {
 
   // ——— Collections ———
   collections: Collection[];
+  workspaces: WorkspaceItem[];
+  activeWorkspaceId: string | null;
+  setActiveWorkspaceId: (id: string) => void;
+  addWorkspace: (workspace: WorkspaceItem) => void;
+  updateWorkspace: (workspace: WorkspaceItem) => void;
+  deleteWorkspace: (id: string) => void;
   activeCollectionId: string | null;
   setActiveCollectionId: (id: string | null) => void;
   addCollection: (collection: Collection) => void;
@@ -134,6 +145,46 @@ interface AppState {
   toggleSettings: () => void;
   saveAsModalOpen: boolean;
   setSaveAsModalOpen: (open: boolean) => void;
+  
+  // ——— Confirm Dialog ———
+  confirmDialog: {
+    isOpen: boolean;
+    variant: "danger" | "warning" | "info";
+    title: string;
+    message: string;
+    detail?: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onConfirm: (() => void) | null;
+  };
+  openConfirm: (opts: {
+    variant?: "danger" | "warning" | "info";
+    title: string;
+    message: string;
+    detail?: string;
+    confirmLabel?: string;
+    cancelLabel?: string;
+    onConfirm: () => void;
+  }) => void;
+  closeConfirm: () => void;
+  
+  // ——— Edit Request ———
+  editModalOpen: boolean;
+  editModalRequest: RequestItem | null;
+  openEditRequest: (request: RequestItem) => void;
+  closeEditRequest: () => void;
+  
+  // ——— New Request ———
+  newRequestModalOpen: boolean;
+  newRequestModalCollectionId: string | null;
+  openNewRequestModal: (collectionId?: string) => void;
+  closeNewRequestModal: () => void;
+  createNewRequest: (name: string, method: string, url: string, collectionId: string) => void;
+  startNewRequest: () => void;
+  
+  // ——— Auto Save ———
+  autoSave: boolean;
+  setAutoSave: (enabled: boolean) => void;
 }
 
 export const useAppStore = create<AppState>((set, get) => ({
@@ -186,6 +237,27 @@ export const useAppStore = create<AppState>((set, get) => ({
       savedCollectionId: collectionId,
       currentScreen: "workspace",
       currentResponse: null,
+    });
+  },
+  deleteRequest: () => {
+    const { savedRequestId, savedCollectionId } = get();
+    if (!savedRequestId || !savedCollectionId) return;
+    persistDeleteRequest(savedCollectionId, savedRequestId);
+    set({
+      collections: getCollections(),
+      savedRequestId: null,
+      savedCollectionId: null,
+      currentRequest: createBlankRequest(),
+      currentResponse: null,
+    });
+  },
+  updateRequestInStore: (request) => {
+    const { savedCollectionId } = get();
+    if (!savedCollectionId) return;
+    persistUpdateRequest(savedCollectionId, request);
+    set({
+      collections: getCollections(),
+      currentRequest: { ...request },
     });
   },
 
@@ -252,10 +324,60 @@ export const useAppStore = create<AppState>((set, get) => ({
 
   // ——— Collections ———
   collections: [],
+  workspaces: [],
+  activeWorkspaceId: null,
+  setActiveWorkspaceId: (id) => {
+    persistActiveWorkspace(id);
+    set({ activeWorkspaceId: id });
+  },
+  addWorkspace: (workspace) => {
+    const updated = persistWorkspace(workspace);
+    persistActiveWorkspace(workspace.id);
+    set({ workspaces: updated, activeWorkspaceId: workspace.id });
+  },
+  updateWorkspace: (workspace) => {
+    const updated = get().workspaces.map((item) => item.id === workspace.id ? workspace : item);
+    saveWorkspaces(updated);
+    set({ workspaces: updated });
+  },
+  deleteWorkspace: (id) => {
+    const state = get();
+    if (state.workspaces.length <= 1) return;
+
+    const workspaces = state.workspaces.filter((workspace) => workspace.id !== id);
+    const collections = state.collections.filter((collection) => collection.workspaceId !== id);
+    const removedCollectionIds = new Set(
+      state.collections.filter((collection) => collection.workspaceId === id).map((collection) => collection.id)
+    );
+    const activeWorkspaceId = state.activeWorkspaceId && state.activeWorkspaceId !== id &&
+      workspaces.some((workspace) => workspace.id === state.activeWorkspaceId)
+      ? state.activeWorkspaceId
+      : workspaces[0].id;
+    const currentRequestRemoved = Boolean(state.savedCollectionId && removedCollectionIds.has(state.savedCollectionId));
+
+    saveWorkspaces(workspaces);
+    saveCollections(collections);
+    persistActiveWorkspace(activeWorkspaceId);
+    set({
+      workspaces,
+      collections,
+      activeWorkspaceId,
+      activeCollectionId: state.activeCollectionId && removedCollectionIds.has(state.activeCollectionId)
+        ? null
+        : state.activeCollectionId,
+      ...(currentRequestRemoved ? {
+        currentRequest: createBlankRequest(),
+        currentResponse: null,
+        savedRequestId: null,
+        savedCollectionId: null,
+      } : {}),
+    });
+  },
   activeCollectionId: null,
   setActiveCollectionId: (id) => set({ activeCollectionId: id }),
   addCollection: (collection) => {
-    const updated = persistCollection(collection);
+    const workspaceId = collection.workspaceId || get().activeWorkspaceId || get().workspaces[0]?.id;
+    const updated = persistCollection({ ...collection, workspaceId });
     set({ collections: updated });
   },
   updateCollection: (collection) => {
@@ -270,7 +392,29 @@ export const useAppStore = create<AppState>((set, get) => ({
         get().activeCollectionId === id ? null : get().activeCollectionId,
     });
   },
-  loadCollections: () => set({ collections: getCollections() }),
+  loadCollections: () => {
+    let workspaces = getWorkspaces();
+    let collections = getCollections();
+    if (workspaces.length === 0) {
+      workspaces = [createBlankWorkspace()];
+      workspaces[0].name = "My Workspace";
+      saveWorkspaces(workspaces);
+    }
+    const defaultWorkspaceId = workspaces[0].id;
+    let migratedCollections = false;
+    collections = collections.map((collection) => {
+      if (collection.workspaceId && workspaces.some((workspace) => workspace.id === collection.workspaceId)) return collection;
+      migratedCollections = true;
+      return { ...collection, workspaceId: defaultWorkspaceId };
+    });
+    if (migratedCollections) saveCollections(collections);
+    const storedActiveWorkspaceId = getActiveWorkspaceId();
+    const activeWorkspaceId = workspaces.some((workspace) => workspace.id === storedActiveWorkspaceId)
+      ? storedActiveWorkspaceId
+      : defaultWorkspaceId;
+    persistActiveWorkspace(activeWorkspaceId);
+    set({ collections, workspaces, activeWorkspaceId });
+  },
 
   // ——— History ———
   history: [],
@@ -336,7 +480,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Apply appearance changes to DOM
     if (partial.theme) applyTheme(partial.theme);
     if (partial.density) applyDensity(partial.density);
-    if (partial.liquidGlass !== undefined) applyLiquidGlass(partial.liquidGlass);
   },
   loadSettings: () => {
     const settings = loadSettings(DEFAULT_SETTINGS);
@@ -344,7 +487,6 @@ export const useAppStore = create<AppState>((set, get) => ({
     // Apply loaded settings to DOM
     applyTheme(settings.theme);
     applyDensity(settings.density);
-    applyLiquidGlass(settings.liquidGlass);
   },
 
   // ——— Theme ———
@@ -362,4 +504,91 @@ export const useAppStore = create<AppState>((set, get) => ({
   toggleSettings: () => set((s) => ({ settingsOpen: !s.settingsOpen })),
   saveAsModalOpen: false,
   setSaveAsModalOpen: (open) => set({ saveAsModalOpen: open }),
+  
+  // ——— Confirm Dialog ———
+  confirmDialog: {
+    isOpen: false,
+    variant: "danger",
+    title: "",
+    message: "",
+    onConfirm: null,
+  },
+  openConfirm: (opts) => set({
+    confirmDialog: {
+      isOpen: true,
+      variant: opts.variant || "danger",
+      title: opts.title,
+      message: opts.message,
+      detail: opts.detail,
+      confirmLabel: opts.confirmLabel || "Confirm",
+      cancelLabel: opts.cancelLabel || "Cancel",
+      onConfirm: opts.onConfirm,
+    },
+  }),
+  closeConfirm: () => set((s) => ({
+    confirmDialog: { ...s.confirmDialog, isOpen: false, onConfirm: null },
+  })),
+  
+  // ——— Edit Request ———
+  editModalOpen: false,
+  editModalRequest: null,
+  openEditRequest: (request) => set({ editModalOpen: true, editModalRequest: request }),
+  closeEditRequest: () => set({ editModalOpen: false, editModalRequest: null }),
+  
+  // ——— New Request ———
+  newRequestModalOpen: false,
+  newRequestModalCollectionId: null,
+  openNewRequestModal: (collectionId) => set({ 
+    newRequestModalOpen: true, 
+    newRequestModalCollectionId: collectionId || null 
+  }),
+  closeNewRequestModal: () => set({ 
+    newRequestModalOpen: false, 
+    newRequestModalCollectionId: null 
+  }),
+  createNewRequest: (name, method, url, collectionId) => {
+    const now = Date.now();
+    const newRequest: RequestItem = {
+      id: crypto.randomUUID(),
+      name: name.trim() || "Untitled Request",
+      method: method.toUpperCase() as import("@/types").HttpMethod,
+      url: url.trim(),
+      headers: [],
+      queryParams: [],
+      bodyType: "none",
+      body: "",
+      auth: { type: "none" },
+      createdAt: now,
+      updatedAt: now,
+    };
+    // Save to collection
+    persistAddRequest(collectionId, newRequest);
+    // Reload collections
+    set({ collections: getCollections() });
+    // Open in workspace
+    set({
+      currentRequest: { ...newRequest },
+      savedRequestId: newRequest.id,
+      savedCollectionId: collectionId,
+      currentScreen: "workspace",
+      currentResponse: null,
+      newRequestModalOpen: false,
+      newRequestModalCollectionId: null,
+    });
+  },
+  startNewRequest: () => set({
+    currentRequest: createBlankRequest(),
+    currentResponse: null,
+    savedRequestId: null,
+    savedCollectionId: null,
+    currentScreen: "workspace",
+  }),
+  
+  // ——— Auto Save ———
+  autoSave: false,
+  setAutoSave: (enabled) => {
+    set({ autoSave: enabled });
+    const current = get().settings;
+    persistSettings({ ...current, autoSave: enabled });
+  },
 }));

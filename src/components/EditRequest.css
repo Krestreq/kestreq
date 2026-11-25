@@ -1,0 +1,284 @@
+/* ============================================
+   Edit Request — Professional Modal
+   ============================================ */
+
+/* ——— Overlay ——— */
+.edit-request-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+  animation: fadeIn var(--transition-fast);
+  padding: var(--space-4);
+}
+
+/* ——— Modal Box ——— */
+.edit-request-modal {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 520px;
+  max-height: 85vh;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-xl);
+  box-shadow: 0 24px 80px rgba(0, 0, 0, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.05);
+  animation: dialogSlideIn var(--transition-normal);
+  overflow: hidden;
+}
+
+@keyframes dialogSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* ——— Header ——— */
+.edit-request-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--space-4) var(--space-5);
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.edit-request-title {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.edit-request-title svg {
+  color: var(--accent);
+}
+
+.edit-request-close {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+}
+
+.edit-request-close:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+/* ——— Body ——— */
+.edit-request-body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  padding: var(--space-5);
+  overflow-y: auto;
+}
+
+/* ——— Fields ——— */
+.edit-field {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+}
+
+.edit-field-label {
+  font-size: var(--font-size-xs);
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.edit-field-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.edit-field-icon {
+  position: absolute;
+  left: var(--space-2);
+  color: var(--text-tertiary);
+  pointer-events: none;
+}
+
+.edit-field-input {
+  width: 100%;
+  padding: var(--space-2) var(--space-3) var(--space-2) var(--space-7);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.edit-field-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.edit-field-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.edit-field-select {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  font-weight: 600;
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  appearance: none;
+}
+
+.edit-field-select:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+/* Method color indicators */
+.edit-field-select[data-method="GET"] { color: var(--method-get); border-color: var(--method-get); }
+.edit-field-select[data-method="POST"] { color: var(--method-post); border-color: var(--method-post); }
+.edit-field-select[data-method="PUT"] { color: var(--method-put); border-color: var(--method-put); }
+.edit-field-select[data-method="PATCH"] { color: var(--method-patch); border-color: var(--method-patch); }
+.edit-field-select[data-method="DELETE"] { color: var(--method-delete); border-color: var(--method-delete); }
+
+.edit-field-textarea {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-sans);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  resize: vertical;
+  transition: all var(--transition-fast);
+  min-height: 60px;
+}
+
+.edit-field-textarea::placeholder {
+  color: var(--text-tertiary);
+}
+
+.edit-field-textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.edit-field-row {
+  display: flex;
+  gap: var(--space-3);
+}
+
+.edit-field--half {
+  flex: 1;
+}
+
+/* ——— Footer ——— */
+.edit-request-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: var(--space-2);
+  padding: var(--space-4) var(--space-5);
+  border-top: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.edit-request-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-1);
+  padding: var(--space-2) var(--space-4);
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  font-family: inherit;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  outline: none;
+}
+
+.edit-request-btn:focus-visible {
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.edit-request-btn--cancel {
+  background: var(--bg-elevated);
+  color: var(--text-secondary);
+}
+
+.edit-request-btn--cancel:hover {
+  background: var(--bg-surface);
+  color: var(--text-primary);
+  border-color: var(--border-secondary);
+}
+
+.edit-request-btn--save {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--text-inverse);
+}
+
+.edit-request-btn--save:hover:not(:disabled) {
+  opacity: 0.9;
+  box-shadow: 0 4px 12px var(--accent-subtle);
+}
+
+.edit-request-btn--save:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ——— Scrollbar ——— */
+.edit-request-body::-webkit-scrollbar {
+  width: 6px;
+}
+
+.edit-request-body::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.edit-request-body::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+/* ——— Reduced Motion ——— */
+@media (prefers-reduced-motion: reduce) {
+  .edit-request-overlay,
+  .edit-request-modal {
+    animation: none;
+  }
+}

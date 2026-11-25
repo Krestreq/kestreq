@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { useAppStore } from "@/store/appStore";
-import { createBlankCollection } from "@/utils/constants";
+import { createBlankCollection, createBlankWorkspace } from "@/utils/constants";
 import { formatDateTime } from "@/utils/helpers";
+import { deleteRequestFromCollection } from "@/services/storage";
 import type { Collection, RequestItem } from "@/types";
 import {
   FolderOpen,
@@ -13,39 +14,115 @@ import {
   ChevronDown,
   Copy,
   ExternalLink,
+  FileText,
 } from "lucide-react";
+import { ConfirmDialog } from "@/components/ConfirmDialog";
+import { EditRequest } from "@/components/EditRequest";
 import "./Collections.css";
 
 export const Collections = () => {
   const {
     collections,
+    workspaces,
+    activeWorkspaceId,
+    setActiveWorkspaceId,
+    addWorkspace,
+    updateWorkspace,
+    deleteWorkspace,
     activeCollectionId,
     setActiveCollectionId,
     addCollection,
     updateCollection,
     deleteCollection,
     openRequest,
+    openConfirm,
+    closeConfirm,
+    confirmDialog,
+    openEditRequest,
+    closeEditRequest,
+    editModalOpen,
+    editModalRequest,
+    updateRequestInStore,
+    loadCollections,
+    startNewRequest,
   } = useAppStore();
 
   const [searchQuery, setSearchQuery] = useState("");
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set(collections.map((c) => c.id)));
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState("");
+  const [expandedWorkspaceIds, setExpandedWorkspaceIds] = useState<Set<string>>(new Set());
+  const [showWorkspaceForm, setShowWorkspaceForm] = useState(false);
+  const [workspaceName, setWorkspaceName] = useState("");
+  const [editingWorkspaceId, setEditingWorkspaceId] = useState<string | null>(null);
+  const [editWorkspaceName, setEditWorkspaceName] = useState("");
 
   const filteredCollections = collections.filter((c) =>
-    c.name.toLowerCase().includes(searchQuery.toLowerCase())
+    c.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    workspaces.find((workspace) => workspace.id === c.workspaceId)?.name.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+  const filteredWorkspaces = workspaces.filter((workspace) =>
+    !searchQuery ||
+    workspace.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    filteredCollections.some((collection) => collection.workspaceId === workspace.id)
   );
 
   const toggleExpand = (id: string) => {
-    const next = new Set(expandedIds);
+    const next = expandedIds.size === 0 ? new Set(collections.map((collection) => collection.id)) : new Set(expandedIds);
     if (next.has(id)) next.delete(id);
     else next.add(id);
     setExpandedIds(next);
   };
 
-  const handleAddCollection = () => {
+  const toggleWorkspace = (id: string) => {
+    const next = expandedWorkspaceIds.size === 0 ? new Set(workspaces.map((workspace) => workspace.id)) : new Set(expandedWorkspaceIds);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    setExpandedWorkspaceIds(next);
+  };
+
+  const handleAddCollection = (workspaceId = activeWorkspaceId) => {
     const newCollection = createBlankCollection();
+    newCollection.name = `Collection ${collections.filter((collection) => collection.workspaceId === workspaceId).length + 1}`;
+    newCollection.workspaceId = workspaceId || undefined;
+    if (workspaceId) setActiveWorkspaceId(workspaceId);
     addCollection(newCollection);
+    setExpandedIds(new Set([...expandedIds, newCollection.id]));
+  };
+
+  const handleAddWorkspace = () => {
+    const name = workspaceName.trim();
+    if (!name) return;
+    const workspace = { ...createBlankWorkspace(), name };
+    addWorkspace(workspace);
+    setExpandedWorkspaceIds((current) => new Set([...current, workspace.id]));
+    setWorkspaceName("");
+    setShowWorkspaceForm(false);
+  };
+
+  const handleSaveWorkspaceName = (id: string) => {
+    const workspace = workspaces.find((item) => item.id === id);
+    if (workspace && editWorkspaceName.trim()) {
+      updateWorkspace({ ...workspace, name: editWorkspaceName.trim(), updatedAt: Date.now() });
+    }
+    setEditingWorkspaceId(null);
+  };
+
+  const handleDeleteWorkspace = (workspace: typeof workspaces[number]) => {
+    const workspaceCollections = collections.filter((collection) => collection.workspaceId === workspace.id);
+    const requestCount = workspaceCollections.reduce((total, collection) => total + countItems(collection), 0);
+    openConfirm({
+      variant: "danger",
+      title: "Delete workspace",
+      message: `Delete “${workspace.name}”?`,
+      detail: `This permanently deletes ${workspaceCollections.length} collection${workspaceCollections.length === 1 ? "" : "s"} and ${requestCount} saved request${requestCount === 1 ? "" : "s"}. This cannot be undone.`,
+      confirmLabel: "Delete workspace",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteWorkspace(workspace.id);
+        closeConfirm();
+      },
+    });
   };
 
   const handleStartEdit = (collection: Collection) => {
@@ -67,10 +144,20 @@ export const Collections = () => {
     setEditingId(null);
   };
 
-  const handleDeleteCollection = (id: string) => {
-    if (confirm("Are you sure you want to delete this collection?")) {
-      deleteCollection(id);
-    }
+  const handleDeleteCollection = (collection: Collection) => {
+    const itemCount = collection.standaloneRequests.length;
+    openConfirm({
+      variant: "danger",
+      title: "Delete Collection",
+      message: `Are you sure you want to delete "${collection.name}"?`,
+      detail: itemCount > 0 ? `This will also delete ${itemCount} request${itemCount > 1 ? "s" : ""} in this collection. This action cannot be undone.` : undefined,
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteCollection(collection.id);
+        closeConfirm();
+      },
+    });
   };
 
   const handleDuplicateCollection = (collection: Collection) => {
@@ -88,6 +175,32 @@ export const Collections = () => {
     openRequest(request, collectionId);
   };
 
+  const handleEditRequest = (request: RequestItem) => {
+    openEditRequest(request);
+  };
+
+  const handleDeleteRequest = (request: RequestItem, collectionId: string) => {
+    openConfirm({
+      variant: "danger",
+      title: "Delete Request",
+      message: `Are you sure you want to delete "${request.name || request.url}"?`,
+      detail: "This action cannot be undone.",
+      confirmLabel: "Delete",
+      cancelLabel: "Cancel",
+      onConfirm: () => {
+        deleteRequestFromCollection(collectionId, request.id);
+        loadCollections();
+        closeConfirm();
+      },
+    });
+  };
+
+  const handleSaveEditRequest = (updatedRequest: RequestItem) => {
+    updateRequestInStore(updatedRequest);
+    closeEditRequest();
+    loadCollections();
+  };
+
   const countItems = (collection: Collection) => {
     let count = collection.standaloneRequests.length;
     collection.folders.forEach((f) => {
@@ -101,8 +214,8 @@ export const Collections = () => {
       {/* Header */}
       <div className="page-header">
         <div className="page-header-left">
-          <h1 className="page-title">Collections</h1>
-          <span className="page-count">{collections.length} collections</span>
+          <h1 className="page-title">Workspaces</h1>
+          <span className="page-count">{workspaces.length} workspaces · {collections.length} collections</span>
         </div>
         <div className="page-header-right">
           <div className="search-input-wrapper">
@@ -110,41 +223,166 @@ export const Collections = () => {
             <input
               type="text"
               className="search-input"
-              placeholder="Search collections..."
+              placeholder="Search workspaces and collections..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
           </div>
-          <button className="btn btn-primary" onClick={handleAddCollection}>
+          <button
+            className="btn btn-secondary"
+            onClick={startNewRequest}
+            title="Create a new request"
+          >
+            <FileText size={14} />
+            <span>New Request</span>
+          </button>
+          <button className="btn btn-primary" onClick={() => setShowWorkspaceForm((open) => !open)}>
             <Plus size={14} />
-            <span>New Collection</span>
+            <span>New Workspace</span>
           </button>
         </div>
       </div>
 
+      {showWorkspaceForm && (
+        <form
+          className="workspace-create-form"
+          onSubmit={(event) => {
+            event.preventDefault();
+            handleAddWorkspace();
+          }}
+        >
+          <input
+            className="edit-input"
+            aria-label="Workspace name"
+            placeholder="e.g. Payments API"
+            value={workspaceName}
+            onChange={(event) => setWorkspaceName(event.target.value)}
+            autoFocus
+          />
+          <button className="btn btn-primary" type="submit" disabled={!workspaceName.trim()}>
+            <Plus size={14} /> Create workspace
+          </button>
+          <button className="btn btn-secondary" type="button" onClick={() => setShowWorkspaceForm(false)}>
+            Cancel
+          </button>
+        </form>
+      )}
+
       {/* Collections List */}
-      {filteredCollections.length === 0 ? (
+      {filteredWorkspaces.length === 0 ? (
         <div className="page-empty-state">
           <FolderOpen size={48} className="page-empty-icon" />
           <h3 className="page-empty-title">
-            {searchQuery ? "No collections found" : "No collections yet"}
+            {searchQuery ? "No workspaces found" : "No workspaces yet"}
           </h3>
           <p className="page-empty-description">
             {searchQuery
               ? "Try a different search term."
-              : "Create your first collection to organize your API requests."}
+              : "Create a workspace to keep related collections and requests together."}
           </p>
           {!searchQuery && (
-            <button className="btn btn-primary" onClick={handleAddCollection}>
+            <button className="btn btn-primary" onClick={() => setShowWorkspaceForm(true)}>
               <Plus size={14} />
-              <span>Create Collection</span>
+              <span>Create Workspace</span>
             </button>
           )}
         </div>
       ) : (
-        <div className="collections-list">
-          {filteredCollections.map((collection) => {
-            const isExpanded = expandedIds.has(collection.id);
+        <div className="workspaces-list">
+          {filteredWorkspaces.map((workspace) => {
+            const workspaceCollections = filteredCollections.filter((collection) => collection.workspaceId === workspace.id);
+            const isWorkspaceExpanded = expandedWorkspaceIds.has(workspace.id) || expandedWorkspaceIds.size === 0;
+            const isWorkspaceActive = activeWorkspaceId === workspace.id;
+
+            return (
+              <section key={workspace.id} className={`workspace-group ${isWorkspaceActive ? "active" : ""}`}>
+                <div className="workspace-group-header">
+                  <div
+                    className="workspace-group-toggle"
+                    onClick={() => {
+                      if (activeWorkspaceId !== workspace.id) setActiveCollectionId(null);
+                      setActiveWorkspaceId(workspace.id);
+                      toggleWorkspace(workspace.id);
+                    }}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        if (activeWorkspaceId !== workspace.id) setActiveCollectionId(null);
+                        setActiveWorkspaceId(workspace.id);
+                        toggleWorkspace(workspace.id);
+                      }
+                    }}
+                    aria-expanded={isWorkspaceExpanded}
+                    role="button"
+                    tabIndex={0}
+                  >
+                    {isWorkspaceExpanded ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    <FolderOpen size={18} />
+                    {editingWorkspaceId === workspace.id ? (
+                      <input
+                        className="edit-input workspace-edit-input"
+                        value={editWorkspaceName}
+                        onChange={(event) => setEditWorkspaceName(event.target.value)}
+                        onBlur={() => handleSaveWorkspaceName(workspace.id)}
+                        onKeyDown={(event) => {
+                          event.stopPropagation();
+                          if (event.key === "Enter") handleSaveWorkspaceName(workspace.id);
+                          if (event.key === "Escape") setEditingWorkspaceId(null);
+                        }}
+                        onClick={(event) => event.stopPropagation()}
+                        autoFocus
+                        aria-label="Workspace name"
+                      />
+                    ) : (
+                      <span className="workspace-group-name">{workspace.name}</span>
+                    )}
+                    <span className="workspace-group-meta">{workspaceCollections.length} collection{workspaceCollections.length === 1 ? "" : "s"}</span>
+                  </div>
+                  <div className="workspace-group-actions">
+                    <button
+                      className="action-btn"
+                      onClick={() => {
+                        setEditingWorkspaceId(workspace.id);
+                        setEditWorkspaceName(workspace.name);
+                      }}
+                      aria-label={`Rename ${workspace.name}`}
+                      title="Rename workspace"
+                    >
+                      <Pencil size={13} />
+                    </button>
+                    <button
+                      className="action-btn delete"
+                      onClick={() => handleDeleteWorkspace(workspace)}
+                      aria-label={`Delete ${workspace.name}`}
+                      title={workspaces.length === 1 ? "Keep at least one workspace" : "Delete workspace"}
+                      disabled={workspaces.length === 1}
+                    >
+                      <Trash2 size={13} />
+                    </button>
+                    <button
+                      className="btn btn-secondary btn-sm workspace-add-collection"
+                      onClick={() => {
+                        setActiveWorkspaceId(workspace.id);
+                        handleAddCollection(workspace.id);
+                      }}
+                      title={`Add a collection to ${workspace.name}`}
+                    >
+                      <Plus size={13} /> Collection
+                    </button>
+                  </div>
+                </div>
+                {isWorkspaceExpanded && (
+                  <div className="workspace-collections">
+                    {workspaceCollections.length === 0 && (
+                      <div className="workspace-empty">
+                        <span>No collections in this workspace yet.</span>
+                        <button className="btn btn-ghost btn-sm" onClick={() => handleAddCollection(workspace.id)}>
+                          <Plus size={13} /> Add collection
+                        </button>
+                      </div>
+                    )}
+                    {workspaceCollections.map((collection) => {
+            const isExpanded = expandedIds.has(collection.id) || expandedIds.size === 0;
             const isActive = activeCollectionId === collection.id;
             const itemCount = countItems(collection);
 
@@ -224,7 +462,7 @@ export const Collections = () => {
                       className="action-btn delete"
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleDeleteCollection(collection.id);
+                        handleDeleteCollection(collection);
                       }}
                       data-tooltip="Delete"
                     >
@@ -262,7 +500,29 @@ export const Collections = () => {
                                 <span className="request-name">
                                   {item.name || item.url}
                                 </span>
-                                <ExternalLink size={12} className="request-open-icon" />
+                                <div className="request-item-actions">
+                                  <button
+                                    className="request-action-btn"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleEditRequest(item);
+                                    }}
+                                    title="Edit"
+                                  >
+                                    <Pencil size={11} />
+                                  </button>
+                                  <button
+                                    className="request-action-btn request-action-btn--delete"
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleDeleteRequest(item, collection.id);
+                                    }}
+                                    title="Delete"
+                                  >
+                                    <Trash2 size={11} />
+                                  </button>
+                                  <ExternalLink size={12} className="request-open-icon" />
+                                </div>
                               </div>
                             ))}
                         </div>
@@ -285,7 +545,29 @@ export const Collections = () => {
                         <span className="request-name">
                           {request.name || request.url}
                         </span>
-                        <ExternalLink size={12} className="request-open-icon" />
+                        <div className="request-item-actions">
+                          <button
+                            className="request-action-btn"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleEditRequest(request);
+                            }}
+                            title="Edit"
+                          >
+                            <Pencil size={11} />
+                          </button>
+                          <button
+                            className="request-action-btn request-action-btn--delete"
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              handleDeleteRequest(request, collection.id);
+                            }}
+                            title="Delete"
+                          >
+                            <Trash2 size={11} />
+                          </button>
+                          <ExternalLink size={12} className="request-open-icon" />
+                        </div>
                       </div>
                     ))}
 
@@ -298,9 +580,37 @@ export const Collections = () => {
                 )}
               </div>
             );
+                    })}
+                  </div>
+                )}
+              </section>
+            );
           })}
         </div>
       )}
+
+      {/* Confirm Dialog */}
+      <ConfirmDialog
+        isOpen={confirmDialog.isOpen}
+        variant={confirmDialog.variant}
+        title={confirmDialog.title}
+        message={confirmDialog.message}
+        detail={confirmDialog.detail}
+        confirmLabel={confirmDialog.confirmLabel}
+        cancelLabel={confirmDialog.cancelLabel}
+        onConfirm={() => {
+          if (confirmDialog.onConfirm) confirmDialog.onConfirm();
+        }}
+        onCancel={closeConfirm}
+      />
+
+      {/* Edit Request Modal */}
+      <EditRequest
+        isOpen={editModalOpen}
+        request={editModalRequest}
+        onSave={handleSaveEditRequest}
+        onClose={closeEditRequest}
+      />
     </div>
   );
 };

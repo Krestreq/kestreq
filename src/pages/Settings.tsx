@@ -1,19 +1,15 @@
 import { useState } from "react";
 import { useAppStore, THEMES } from "@/store/appStore";
 import {
-  Palette,
-  Droplets,
-  Monitor,
-  LayoutGrid,
   Clock,
   Database,
   Shield,
   Info,
   Check,
   Sparkles,
-  Globe,
   Zap,
   HardDrive,
+  Save,
 } from "lucide-react";
 import "./shared.css";
 import "./Settings.css";
@@ -27,7 +23,7 @@ const DENSITY_OPTIONS = [
 type SettingsSection = "appearance" | "request" | "response" | "data" | "about";
 
 const SECTION_NAV: { key: SettingsSection; label: string; icon: any }[] = [
-  { key: "appearance", label: "Appearance", icon: Palette },
+  { key: "appearance", label: "Appearance", icon: Shield },
   { key: "request", label: "Request Defaults", icon: Shield },
   { key: "response", label: "Response", icon: Clock },
   { key: "data", label: "Data & Storage", icon: Database },
@@ -35,7 +31,7 @@ const SECTION_NAV: { key: SettingsSection; label: string; icon: any }[] = [
 ];
 
 export const Settings = () => {
-  const { settings, updateSettings, setTheme } = useAppStore();
+  const { settings, updateSettings, setTheme, autoSave, setAutoSave } = useAppStore();
   const [activeSection, setActiveSection] = useState<SettingsSection>("appearance");
 
   const darkThemes = THEMES.filter((t) => t.category === "dark");
@@ -85,7 +81,7 @@ export const Settings = () => {
               <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
-                    <Palette size={16} />
+                    <Shield size={16} />
                   </div>
                   <div>
                     <h3 className="settings-card-title">Theme</h3>
@@ -104,8 +100,24 @@ export const Settings = () => {
                           key={theme.value}
                           className={`theme-option ${settings.theme === theme.value ? "active" : ""}`}
                           onClick={() => setTheme(theme.value)}
+                          aria-label={theme.label}
+                          aria-pressed={settings.theme === theme.value}
                         >
-                          <span className="theme-preview" data-theme={theme.value} />
+                          <span className="theme-preview" data-theme={theme.value} aria-hidden="true">
+                            <span className="theme-preview-toolbar">
+                              <i />
+                              <i />
+                              <i />
+                            </span>
+                            <span className="theme-preview-body">
+                              <span className="theme-preview-sidebar" />
+                              <span className="theme-preview-lines">
+                                <i />
+                                <i />
+                                <i />
+                              </span>
+                            </span>
+                          </span>
                           <span className="theme-name">{theme.label}</span>
                           {settings.theme === theme.value && (
                             <span className="theme-check">
@@ -124,8 +136,24 @@ export const Settings = () => {
                           key={theme.value}
                           className={`theme-option ${settings.theme === theme.value ? "active" : ""}`}
                           onClick={() => setTheme(theme.value)}
+                          aria-label={theme.label}
+                          aria-pressed={settings.theme === theme.value}
                         >
-                          <span className="theme-preview" data-theme={theme.value} />
+                          <span className="theme-preview" data-theme={theme.value} aria-hidden="true">
+                            <span className="theme-preview-toolbar">
+                              <i />
+                              <i />
+                              <i />
+                            </span>
+                            <span className="theme-preview-body">
+                              <span className="theme-preview-sidebar" />
+                              <span className="theme-preview-lines">
+                                <i />
+                                <i />
+                                <i />
+                              </span>
+                            </span>
+                          </span>
                           <span className="theme-name">{theme.label}</span>
                           {settings.theme === theme.value && (
                             <span className="theme-check">
@@ -139,70 +167,11 @@ export const Settings = () => {
                 </div>
               </div>
 
-              {/* Visual Effects */}
-              <div className="settings-card">
-                <div className="settings-card-header">
-                  <div className="settings-card-icon">
-                    <Sparkles size={16} />
-                  </div>
-                  <div>
-                    <h3 className="settings-card-title">Visual Effects</h3>
-                    <p className="settings-card-description">
-                      Customize the visual style of your interface
-                    </p>
-                  </div>
-                </div>
-
-                <div className="settings-row">
-                  <div className="settings-row-info">
-                    <div className="settings-row-title">
-                      <Droplets size={14} />
-                      <span>Liquid Glass</span>
-                    </div>
-                    <p className="settings-row-description">
-                      Translucent surfaces with frosted-glass panels
-                    </p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={settings.liquidGlass}
-                      onChange={(e) =>
-                        updateSettings({ liquidGlass: e.target.checked })
-                      }
-                    />
-                    <span className="toggle-slider" />
-                  </label>
-                </div>
-
-                <div className="settings-row">
-                  <div className="settings-row-info">
-                    <div className="settings-row-title">
-                      <Monitor size={14} />
-                      <span>macOS Window Controls</span>
-                    </div>
-                    <p className="settings-row-description">
-                      Show traffic-light window controls in the title bar
-                    </p>
-                  </div>
-                  <label className="toggle-switch">
-                    <input
-                      type="checkbox"
-                      checked={settings.macOSControls}
-                      onChange={(e) =>
-                        updateSettings({ macOSControls: e.target.checked })
-                      }
-                    />
-                    <span className="toggle-slider" />
-                  </label>
-                </div>
-              </div>
-
               {/* Interface Density */}
               <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
-                    <LayoutGrid size={16} />
+                    <Shield size={16} />
                   </div>
                   <div>
                     <h3 className="settings-card-title">Interface Density</h3>
@@ -241,7 +210,7 @@ export const Settings = () => {
               <div className="settings-card">
                 <div className="settings-card-header">
                   <div className="settings-card-icon">
-                    <Globe size={16} />
+                    <Shield size={16} />
                   </div>
                   <div>
                     <h3 className="settings-card-title">Request Configuration</h3>
@@ -319,6 +288,28 @@ export const Settings = () => {
                     <span className="toggle-slider" />
                   </label>
                 </div>
+
+                <div className="settings-row">
+                  <div className="settings-row-info">
+                    <div className="settings-row-title">
+                      <Save size={14} />
+                      <span>Auto Save</span>
+                    </div>
+                    <p className="settings-row-description">
+                      Automatically save requests when editing in the workspace
+                    </p>
+                  </div>
+                  <label className="toggle-switch">
+                    <input
+                      type="checkbox"
+                      checked={autoSave}
+                      onChange={(e) =>
+                        setAutoSave(e.target.checked)
+                      }
+                    />
+                    <span className="toggle-slider" />
+                  </label>
+                </div>
               </div>
             </div>
           )}
@@ -364,7 +355,7 @@ export const Settings = () => {
                 <div className="settings-row">
                   <div className="settings-row-info">
                     <div className="settings-row-title">
-                      <LayoutGrid size={14} />
+                      <Shield size={14} />
                       <span>Wrap Response</span>
                     </div>
                     <p className="settings-row-description">
@@ -437,7 +428,7 @@ export const Settings = () => {
             <div className="settings-section-animate">
               <div className="settings-card about-card">
                 <div className="about-logo">
-                  <Globe size={32} />
+                  <img src="/kestreq_logo.svg" alt="Kestreq" className="about-logo-img" />
                 </div>
                 <h2 className="about-title">Kestreq</h2>
                 <p className="about-version">Version 0.1.0</p>

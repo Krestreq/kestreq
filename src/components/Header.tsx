@@ -11,6 +11,7 @@ import {
   Settings,
   Save,
   FolderPlus,
+  Plus,
 } from "lucide-react";
 import "./Header.css";
 
@@ -25,10 +26,10 @@ export const Header = () => {
     currentScreen,
     setCurrentScreen,
     toggleCommandPalette,
-    settings,
     saveRequest,
     savedCollectionId,
     setSaveAsModalOpen,
+    startNewRequest,
   } = useAppStore();
 
   const [methodDropdownOpen, setMethodDropdownOpen] = useState(false);
@@ -67,15 +68,6 @@ export const Header = () => {
 
   return (
     <header className="header">
-      {/* macOS-style traffic lights */}
-      {settings.macOSControls && (
-        <div className="traffic-lights">
-          <span className="traffic-light traffic-light-close" />
-          <span className="traffic-light traffic-light-minimize" />
-          <span className="traffic-light traffic-light-maximize" />
-        </div>
-      )}
-
       {isWorkspace ? (
         <>
           {/* Request bar for workspace */}
@@ -172,6 +164,14 @@ export const Header = () => {
 
       {/* Right side actions */}
       <div className="header-actions">
+        <button
+          className="btn btn-primary header-new-request"
+          onClick={startNewRequest}
+          aria-label="Create a new request"
+        >
+          <Plus size={14} />
+          <span>New Request</span>
+        </button>
         <button
           className="icon-btn"
           onClick={toggleCommandPalette}

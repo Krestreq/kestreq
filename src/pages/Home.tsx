@@ -34,6 +34,7 @@ export const Home = () => {
     automatedTests,
     addCollection,
     setCurrentScreen,
+    startNewRequest,
   } = useAppStore();
 
   const recentHistory = history.slice(0, 5);
@@ -47,7 +48,7 @@ export const Home = () => {
   };
 
   const handleNewRequest = () => {
-    setCurrentScreen("workspace");
+    startNewRequest();
   };
 
   const handleNewCollection = () => {
@@ -111,7 +112,7 @@ export const Home = () => {
               <button
                 key={action.label}
                 className="quick-action-card"
-                onClick={() => setCurrentScreen(action.screen)}
+                onClick={() => action.label === "New Request" ? handleNewRequest() : setCurrentScreen(action.screen)}
               >
                 <div className="quick-action-icon" style={{ color: action.color }}>
                   <Icon size={20} />

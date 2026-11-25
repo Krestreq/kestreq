@@ -787,42 +787,6 @@
 }
 
 /* ============================================
-   LIQUID GLASS MODE
-   ============================================ */
-[data-liquid-glass="true"] {
-  --bg-primary: var(--glass-bg);
-  --bg-secondary: var(--glass-bg);
-  --bg-surface: var(--glass-bg);
-  --header-bg: var(--glass-bg);
-  --sidebar-bg: var(--glass-bg);
-  --panel-bg: var(--glass-bg);
-  --dropdown-bg: var(--glass-bg);
-}
-
-[data-liquid-glass="true"] .app,
-[data-liquid-glass="true"] .header,
-[data-liquid-glass="true"] .sidebar,
-[data-liquid-glass="true"] .request-panel,
-[data-liquid-glass="true"] .response-panel {
-  backdrop-filter: blur(var(--glass-blur));
-  -webkit-backdrop-filter: blur(var(--glass-blur));
-  background: var(--glass-bg) !important;
-  border-color: var(--glass-border) !important;
-}
-
-[data-liquid-glass="true"] .sidebar {
-  border-right: var(--glass-border);
-}
-
-[data-liquid-glass="true"] .header {
-  border-bottom: var(--glass-border);
-}
-
-[data-liquid-glass="true"] .panel-tabs {
-  border-bottom: var(--glass-border);
-}
-
-/* ============================================
    RESET & BASE
    ============================================ */
 *,

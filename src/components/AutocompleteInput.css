@@ -1,0 +1,143 @@
+/* ============================================
+   Autocomplete Input — Intellisense Dropdown
+   ============================================ */
+
+.autocomplete-input {
+  position: relative;
+  width: 100%;
+}
+
+.autocomplete-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.autocomplete-field {
+  width: 100%;
+  padding: var(--space-1) var(--space-5) var(--space-1) var(--space-2);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  background: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: var(--radius-md);
+  color: var(--text-primary);
+  outline: none;
+  transition: all var(--transition-fast);
+}
+
+.autocomplete-field::placeholder {
+  color: var(--text-tertiary);
+}
+
+.autocomplete-field:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-subtle);
+}
+
+.autocomplete-clear {
+  position: absolute;
+  right: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  background: var(--text-tertiary);
+  border: none;
+  border-radius: 50%;
+  color: var(--bg-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  opacity: 0.5;
+}
+
+.autocomplete-clear:hover {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.autocomplete-chevron {
+  position: absolute;
+  right: 8px;
+  color: var(--text-tertiary);
+  pointer-events: none;
+  transition: transform var(--transition-fast);
+}
+
+/* ——— Suggestions List ——— */
+.autocomplete-list {
+  position: absolute;
+  top: calc(100% + 4px);
+  left: 0;
+  right: 0;
+  z-index: 100;
+  max-height: 200px;
+  overflow-y: auto;
+  background: var(--bg-surface);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-lg);
+  padding: var(--space-1) 0;
+  margin: 0;
+  list-style: none;
+  animation: dropdownSlideIn var(--transition-fast);
+}
+
+@keyframes dropdownSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.autocomplete-item {
+  display: flex;
+  align-items: center;
+  padding: var(--space-2) var(--space-3);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  font-size: var(--font-size-sm);
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+}
+
+.autocomplete-item:hover {
+  background: var(--accent-subtle);
+  color: var(--text-primary);
+}
+
+.autocomplete-item.selected {
+  background: var(--accent-subtle);
+  color: var(--accent);
+  font-weight: 500;
+}
+
+.autocomplete-item-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ——— Scrollbar ——— */
+.autocomplete-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.autocomplete-list::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 3px;
+}
+
+.autocomplete-list::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb-hover);
+}

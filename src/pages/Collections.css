@@ -11,10 +11,129 @@
   gap: var(--space-2);
 }
 
+.workspaces-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-top: 1px solid var(--border-primary);
+}
+
+.workspace-create-form {
+  display: flex;
+  gap: var(--space-2);
+  align-items: center;
+  margin-bottom: var(--space-4);
+  padding: var(--space-3);
+  background: var(--bg-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--radius-md);
+}
+
+.workspace-create-form .edit-input {
+  min-height: 36px;
+}
+
+.workspace-group {
+  overflow: visible;
+  background: transparent;
+  border-bottom: 1px solid var(--border-primary);
+  transition: border-color var(--transition-fast);
+}
+
+.workspace-group.active {
+  border-color: var(--border-primary);
+}
+
+.workspace-group-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-1);
+  background: transparent;
+}
+
+.workspace-group-toggle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  min-width: 0;
+  padding: 0;
+  flex: 1;
+  color: var(--text-secondary);
+  background: transparent;
+  border: none;
+  text-align: left;
+}
+
+.workspace-group-toggle[role="button"] {
+  cursor: pointer;
+}
+
+.workspace-group-toggle[role="button"]:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.workspace-group-toggle > svg:nth-child(2) {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+}
+
+.workspace-group-name {
+  overflow: hidden;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.workspace-group-meta {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-xs);
+  white-space: nowrap;
+}
+
+.workspace-group-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.workspace-edit-input {
+  max-width: 260px;
+}
+
+.workspace-add-collection {
+  flex-shrink: 0;
+}
+
+.workspace-collections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-1) var(--space-3) var(--space-3) var(--space-8);
+}
+
+.workspace-collections .collection-row {
+  background: transparent;
+  border-radius: var(--radius-sm);
+}
+
+.workspace-empty {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-tertiary);
+  font-size: var(--font-size-sm);
+}
+
 .collection-row {
   background: var(--bg-surface);
   border: 1px solid var(--border-primary);
-  border-radius: var(--radius-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
   transition: all var(--transition-fast);
 }
@@ -187,8 +306,46 @@
   transition: opacity var(--transition-fast);
 }
 
+/* ——— Request Item Actions ——— */
+.request-item-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  opacity: 0;
+  transition: opacity var(--transition-fast);
+}
+
+.request-item:hover .request-item-actions {
+  opacity: 1;
+}
+
 .request-item:hover .request-open-icon {
   opacity: 1;
+}
+
+.request-action-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 22px;
+  height: 22px;
+  background: transparent;
+  border: none;
+  border-radius: var(--radius-sm);
+  color: var(--text-tertiary);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  padding: 0;
+}
+
+.request-action-btn:hover {
+  background: var(--bg-elevated);
+  color: var(--text-primary);
+}
+
+.request-action-btn--delete:hover {
+  background: var(--error-bg);
+  color: var(--error);
 }
 
 .collection-empty {
@@ -196,4 +353,27 @@
   text-align: center;
   font-size: var(--font-size-sm);
   color: var(--text-tertiary);
+}
+
+@media (max-width: 640px) {
+  .workspace-create-form {
+    flex-wrap: wrap;
+  }
+
+  .workspace-create-form .edit-input {
+    flex-basis: 100%;
+  }
+
+  .workspace-group-header {
+    padding: var(--space-2) var(--space-3);
+  }
+
+  .workspace-group-meta {
+    display: none;
+  }
+
+  .workspace-empty {
+    align-items: flex-start;
+    flex-direction: column;
+  }
 }
