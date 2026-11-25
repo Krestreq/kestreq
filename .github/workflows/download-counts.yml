@@ -1,0 +1,40 @@
+name: Report release downloads
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Calculate release download totals
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const releases = await github.paginate(github.rest.repos.listReleases, {
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              per_page: 100,
+            });
+
+            const releaseTotals = releases.map((release) => ({
+              tag: release.tag_name,
+              downloads: release.assets.reduce((total, asset) => total + asset.download_count, 0),
+            }));
+            const totalDownloads = releaseTotals.reduce((total, release) => total + release.downloads, 0);
+
+            core.summary
+              .addHeading('Kestreq release downloads')
+              .addRaw(`**Total downloads across ${releases.length} published releases: ${totalDownloads}**`)
+              .addTable([
+                [
+                  { data: 'Release', header: true },
+                  { data: 'Downloads', header: true },
+                ],
+                ...releaseTotals.map(({ tag, downloads }) => [tag.replaceAll('|', ' '), downloads]),
+              ])
+              .addRaw('Counts include all release assets and are downloads, not unique people or active installations.')
+              .write();
