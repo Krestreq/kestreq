@@ -23,6 +23,40 @@ jobs:
           run-id: ${{ github.event.workflow_run.id }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
 
+      - name: Add platform names to installers
+        run: |
+          python3 - <<'PY'
+          from pathlib import Path
+          import shutil
+
+          platforms = {
+              "kestreq-linux-x64": "linux_amd64",
+              "kestreq-linux-arm64": "linux_arm64",
+              "kestreq-macos-intel": "macos_amd64",
+              "kestreq-macos-apple-silicon": "macos_arm64",
+              "kestreq-windows-x64": "windows_amd64",
+              "kestreq-windows-arm64": "windows_arm64",
+          }
+          installer_extensions = {".appimage", ".deb", ".rpm", ".dmg", ".msi", ".exe"}
+          release_dir = Path("release-assets")
+          renamed_dir = release_dir / "renamed"
+          renamed_dir.mkdir()
+
+          for artifact_name, platform in platforms.items():
+              artifact_dir = release_dir / artifact_name
+              if not artifact_dir.exists():
+                  raise SystemExit(f"Missing build artifact: {artifact_name}")
+              installer_count = 0
+              for installer in artifact_dir.rglob("*"):
+                  if installer.is_file() and installer.suffix.lower() in installer_extensions:
+                      destination = renamed_dir / f"kestreq_{platform}{installer.suffix}"
+                      shutil.copy2(installer, destination)
+                      installer_count += 1
+              if installer_count == 0:
+                  raise SystemExit(f"No installers found in {artifact_name}")
+
+          PY
+
       - name: Publish GitHub release
         uses: softprops/action-gh-release@v2
         with:
@@ -31,12 +65,6 @@ jobs:
           target_commitish: ${{ github.event.workflow_run.head_sha }}
           generate_release_notes: true
           fail_on_unmatched_files: true
-          files: |
-            release-assets/**/*.AppImage
-            release-assets/**/*.deb
-            release-assets/**/*.rpm
-            release-assets/**/*.dmg
-            release-assets/**/*.msi
-            release-assets/**/*.exe
+          files: release-assets/renamed/*
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
